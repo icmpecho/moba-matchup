@@ -4,7 +4,8 @@
   "description": "",
   "main": "dist/main.js",
   "scripts": {
-    "start": "node dist/main.js"
+    "start": "tsc && node dist/main.js",
+    "test": "tsc && mocha dist/ --recursive"
   },
   "author": "",
   "license": "ISC",
@@ -17,5 +18,13 @@
     "koa-router": "^7.2.1",
     "mongodb": "^2.2.30",
     "typescript": "^2.4.2"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.0.2",
+    "@types/chai-as-promised": "0.0.31",
+    "@types/mocha": "^2.2.41",
+    "chai": "^4.1.0",
+    "chai-as-promised": "^7.1.1",
+    "mocha": "^3.5.0"
   }
 }
