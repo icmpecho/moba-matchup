@@ -4,7 +4,7 @@ import {MongoClient, Db} from "mongodb"
 
 declare module "koa" {
     interface BaseContext {
-        db: Db;
+        db: Db
     }
 }
 
