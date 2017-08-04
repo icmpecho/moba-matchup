@@ -1,5 +1,5 @@
 import {Db} from 'mongodb'
-import { assert, mongoConnect } from './helper'
+import { assert, testDB } from './helper'
 import { PlayerService, IPlayer } from '../player'
 
 describe('PlayerService', () => {
@@ -7,8 +7,7 @@ describe('PlayerService', () => {
   let service: PlayerService
   beforeEach(() => {
     return async function() {
-      db = await mongoConnect()
-      await db.dropDatabase()
+      db = await testDB()
       service = new PlayerService(db)
       await service.createIndexes()
     }()
@@ -27,11 +26,11 @@ describe('PlayerService', () => {
     })
 
     it('actually saved the player', () => {
-      assert.eventually.equal(db.collection('players').count({}), 1)
+      return assert.eventually.equal(db.collection('players').count({}), 1)
     })
 
     it('reject player with the duplicated name', () => {
-      assert.isRejected(service.create('foo'))
+      return assert.isRejected(service.create('foo'))
     })
   })
 })

@@ -5,9 +5,11 @@ import {MongoClient} from 'mongodb'
 chai.use(chaiAsPromised)
 const assert = chai.assert
 
-const mongoConnect = async () => {
+const testDB = async () => {
   const mongoURL = 'mongodb://localhost:27017/moba-test'
-  return MongoClient.connect(mongoURL)
+  const db = await MongoClient.connect(mongoURL)
+  await db.dropDatabase()
+  return db
 }
 
-export { assert, mongoConnect }
+export { assert, testDB }
