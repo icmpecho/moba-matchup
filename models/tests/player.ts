@@ -10,6 +10,7 @@ describe('PlayerService', () => {
       db = await mongoConnect()
       await db.dropDatabase()
       service = new PlayerService(db)
+      await service.createIndexes()
     }()
   })
 
@@ -27,6 +28,10 @@ describe('PlayerService', () => {
 
     it('actually saved the player', () => {
       assert.eventually.equal(db.collection('players').count({}), 1)
+    })
+
+    it('reject player with the duplicated name', () => {
+      assert.isRejected(service.create('foo'))
     })
   })
 })
