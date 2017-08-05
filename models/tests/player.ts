@@ -50,17 +50,17 @@ describe('PlayerService', () => {
     beforeEach(() => {
       return async function() {
         let results: Promise<IPlayer>[] = []
-        for(let i = 0; i < 20; i++) {
+        for(let i = 0; i < 60; i++) {
           results.push(service.create(`player-${i}`))
         }
         players = await Promise.all(results)
       }()
     })
 
-    it('return list of 10 players by default', () => {
+    it('return list of 50 players by default', () => {
       return async function() {
         const pList = await service.list()
-        assert.equal(pList.length, 10)
+        assert.equal(pList.length, 50)
       }()
     })
 

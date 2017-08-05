@@ -26,7 +26,7 @@ class PlayerService {
     return this.collection.findOne({_id: inserted.insertedId})
   }
 
-  async list(limit=10): Promise<IPlayer[]> {
+  async list(limit=50): Promise<IPlayer[]> {
     return this.collection.find({}).sort('name', 1).limit(limit).toArray()
   }
 }
