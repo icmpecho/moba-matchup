@@ -47,6 +47,12 @@ class GameService {
     ])
   }
 
+  async list(limit=10): Promise<IEnrichedGame[]> {
+    const games = await this.collection
+      .find({}).sort('created', -1).limit(limit).toArray()
+    return Promise.all(_.map(games, x => this.enrich(x)))
+  }
+
   async create(team1: ITeam, team2: ITeam): Promise<IGame> {
     const game = {
       created: new Date(Date.now()),

@@ -16,6 +16,11 @@ router.post('/players', async (ctx) => {
   ctx.body = player
 })
 
+router.get('/games', async (ctx) => {
+  const games = await ctx.models.game.list()
+  ctx.body = games
+})
+
 router.post('/games', async (ctx) => {
   const data = ctx.request.body
   const game = await ctx.models.game.autoCreate(data.playerIds)
