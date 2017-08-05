@@ -7,12 +7,20 @@ interface ITeam {
   rating: number,
 }
 
+interface IEnrichedTeam extends ITeam {
+  players: IPlayer[],
+}
+
 interface IGame {
   _id: ObjectID
   created: Date
   ended?: Date
   teams: ITeam[]
   canceled: boolean
+}
+
+interface IEnrichedGame extends IGame {
+  teams: IEnrichedTeam[]
 }
 
 class GameService {
@@ -62,6 +70,32 @@ class GameService {
       .toArray()
     const teams = this.assignTeams(players)
     return this.create(teams[0], teams[1])
+  }
+
+  async enrich(game: IGame): Promise<IEnrichedGame> {
+    const pCollection = this.db.collection('players')
+    const [t1Players, t2Players] = await Promise.all([
+      pCollection.find({_id: {'$in': game.teams[0].playerIds}}).toArray(),
+      pCollection.find({_id: {'$in': game.teams[1].playerIds}}).toArray(),
+    ])
+    return {
+      _id: game._id,
+      created: game.created,
+      ended: game.ended,
+      canceled: game.canceled,
+      teams: [
+        {
+          playerIds: game.teams[0].playerIds,
+          players: t1Players,
+          rating: game.teams[0].rating,
+        },
+        {
+          playerIds: game.teams[1].playerIds,
+          players: t2Players,
+          rating: game.teams[1].rating,
+        },
+      ]
+    }
   }
 
   private assignTeams(players: IPlayer[]): ITeam[] {

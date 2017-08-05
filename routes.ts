@@ -15,3 +15,9 @@ router.post('/players', async (ctx) => {
   const player = await ctx.models.player.create(data.name, data.rating)
   ctx.body = player
 })
+
+router.post('/games', async (ctx) => {
+  const data = ctx.request.body
+  const game = await ctx.models.game.autoCreate(data.playerIds)
+  ctx.body = await ctx.models.game.enrich(game)
+})
