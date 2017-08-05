@@ -21,7 +21,7 @@ apiRouter.get('/games', async (ctx) => {
 
 apiRouter.post('/games', async (ctx) => {
   const data = ctx.request.body
-  const game = await ctx.models.game.autoCreate(data.playerIds)
+  const game = await ctx.models.game.create(data.playerIds)
   ctx.body = await ctx.models.game.enrich(game)
 })
 

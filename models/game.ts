@@ -11,6 +11,7 @@ interface IGame {
   _id: ObjectID
   created: Date
   ended?: Date
+  winner?: number
   teams: ITeam[]
   canceled: boolean
 }
@@ -24,6 +25,7 @@ interface IEnrichedGame {
   _id: ObjectID
   created: Date
   ended?: Date
+  winner?: number
   teams: IEnrichedTeam[]
   canceled: boolean
 }
@@ -54,34 +56,40 @@ class GameService {
     return Promise.all(_.map(games, x => this.enrich(x)))
   }
 
-  async create(team1: ITeam, team2: ITeam): Promise<IGame> {
-    const game = {
-      created: new Date(Date.now()),
-      teams: [team1, team2],
-      canceled: false,
-    }
-    const inserted = await this.collection.insertOne(game)
-    return this.collection.findOne({_id: inserted.insertedId})
-  }
-
   async cancel(gameId: string): Promise<IGame> {
     const id = new ObjectID(gameId)
     const result = await this.collection.findOneAndUpdate(
       {_id: id}, {'$set': {canceled: true}}, {returnOriginal: false})
-    if (!result.value) {
+    const game = result.value
+    if (!game) {
       throw new Error('Game not found')
     }
-    return result.value
+    return game
   }
 
-  async autoCreate(playerIds: string[]): Promise<IGame> {
+  async submitResult(
+    gameId: string, winnerTeam: number): Promise<IGame> {
+    const id = new ObjectID(gameId)
+    const result = await this.collection.findOneAndUpdate(
+      {_id: id, winner: {'$exists': false}, canceled: false},
+      {'$set': {winner: winnerTeam, ended: new Date(Date.now())}},
+      {returnOriginal: false})
+    const game = result.value
+    if (!game) {
+      throw new Error('Game not found')
+    }
+    await this.updateRating(game)
+    return game
+  }
+
+  async create(playerIds: string[]): Promise<IGame> {
     playerIds = _.uniq(playerIds)
     const pCollection = this.db.collection('players')
     const players = await pCollection
       .find({_id: {'$in': _.map(playerIds, x => new ObjectID(x))}})
       .toArray()
     const teams = this.assignTeams(players)
-    return this.create(teams[0], teams[1])
+    return this._create(teams[0], teams[1])
   }
 
   async enrich(game: IGame): Promise<IEnrichedGame> {
@@ -95,6 +103,7 @@ class GameService {
       created: game.created,
       ended: game.ended,
       canceled: game.canceled,
+      winner: game.winner,
       teams: [
         {
           players: t1Players,
@@ -128,6 +137,33 @@ class GameService {
   private teamRating(team: IPlayer[]): number {
     return _.sumBy(team, 'rating')
   }
+
+  private async _create(team1: ITeam, team2: ITeam): Promise<IGame> {
+    const game = {
+      created: new Date(Date.now()),
+      teams: [team1, team2],
+      canceled: false,
+    }
+    const inserted = await this.collection.insertOne(game)
+    return this.collection.findOne({_id: inserted.insertedId})
+  }
+
+  private async updateRating(game: IGame) {
+    const pCollection = this.db.collection('players')
+    const winner = game.winner
+    const winnerIds = game.teams[winner].playerIds
+    const loserIds = game.teams[1-winner].playerIds
+    await Promise.all([
+      pCollection.updateMany(
+        {_id: {'$in': winnerIds}},
+        {'$inc': {rating: 1}},
+      ),
+      pCollection.updateMany(
+        {_id: {'$in': loserIds}},
+        {'$inc': {rating: -1}},
+      ),
+    ])
+  }
 }
 
-export {IGame, ITeam, GameService}
+export {IGame, IEnrichedGame, ITeam, GameService}

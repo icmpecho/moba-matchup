@@ -1,87 +1,103 @@
-import {Db, ObjectID} from 'mongodb'
+import {Db} from 'mongodb'
 import {assert, testDB} from './helper'
-import {IGame} from '../game'
+import {IGame, IEnrichedGame} from '../game'
 import {IPlayer} from '../player'
 import {Service} from '../index'
 
 describe('GameService', () => {
   let db: Db
   let service: Service
+  let players: IPlayer[]
+  let game: IGame
   beforeEach(() => {
     return async function() {
       db = await testDB()
       service = new Service(db)
       await service.createIndexes()
+      players = []
+      for(let i = 0; i < 10; i++) {
+        const p = await service.player.create(`player-${i}`, i)
+        players.push(p)
+      }
+      const playerIds = players.map(p => p._id.toHexString())
+      game = await service.game.create(playerIds)
     }()
   })
 
-  describe('#create, #cancel', () => {
-    let createdGame: IGame
-    beforeEach(() => {
+  describe('#create', () => {
+    it('split team into 5v5', () => {
+      const teams = game.teams
+      assert.equal(teams[0].playerIds.length, 5)
+      assert.equal(teams[1].playerIds.length, 5)
+      assert.equal(teams.length, 2)
+    })
+
+    it('balance team rating', () => {
+      const teams = game.teams
+      const diff = Math.abs(teams[0].rating - teams[1].rating)
+      assert.isAtMost(diff, 1)
+    })
+  })
+
+  describe('#cancel', () => {
+    it('mark game as canceled', () => {
       return async function() {
-        const pids: ObjectID[] = []
-        for(let i = 0; i < 10; i++) {
-          pids.push(new ObjectID())
-        }
-        createdGame = await service.game.create(
-          {playerIds: pids.slice(0, 5), rating: 0},
-          {playerIds: pids.slice(5, 10), rating: 0},
-        )
+        const result = await service.game.cancel(game._id.toHexString())
+        assert.isTrue(result.canceled)
       }()
     })
-    
-    describe('#create', () => {
-      it('create a new game in db', () => {
-        return assert.eventually.equal(db.collection('games').count({}), 1)
-      })
 
-      it('set initial cancel flag to false', () => {
-        assert.equal(createdGame.canceled, false)
-      })
+    it('reject if game does not exists', () => {
+      return assert.isRejected(
+        service.game.cancel('AAAAAAAAAAAAAAAAAAAAAAAA'))
+    })
+  })
+
+  describe('#submitResult', () => {
+    let result: IGame
+    let oldGameValue: IEnrichedGame
+    beforeEach(() => {
+      return async function() {
+        oldGameValue = await service.game.enrich(game)
+        result = await service.game.submitResult(
+          game._id.toHexString(), 0)
+      }()  
+    })
+  
+    it('mark winner', () => {
+      assert.equal(result.winner, 0)
     })
 
-    describe('#cancel', () => {
-      it('mark game as canceled', () => {
-        return async function() {
-          const result = await service.game.cancel(
-            createdGame._id.toHexString())
-          assert.isTrue(result.canceled)
-        }()
-      })
-
-      it('reject if game does not exists', () => {
-        return assert.isRejected(
-          service.game.cancel('AAAAAAAAAAAAAAAAAAAAAAAA'))
-      })
+    it('reject if game is ended', () => {
+      return assert.isRejected(service.game.submitResult(
+        game._id.toHexString(), 0))
     })
-    
-    describe('#autoCreate', () => {
-      let players: IPlayer[]
-      let game: IGame
-      beforeEach(() => {
-        return async function() {
-          players = []
-          for(let i = 0; i < 10; i++) {
-            const p = await service.player.create(`player-${i}`, i)
-            players.push(p)
-          }
-          const playerIds = players.map(p => p._id.toHexString())
-          game = await service.game.autoCreate(playerIds)
-        }()
-      })
 
-      it('split team into 5v5', () => {
-        const teams = game.teams
-        assert.equal(teams[0].playerIds.length, 5)
-        assert.equal(teams[1].playerIds.length, 5)
-        assert.equal(teams.length, 2)
-      })
+    it('reject if game is canceled', () => {
+      return assert.isRejected(service.game.submitResult(
+        game._id.toHexString(), 0))
+    })
 
-      it('balance team rating', () => {
-        const teams = game.teams
-        const diff = Math.abs(teams[0].rating - teams[1].rating)
-        assert.isAtMost(diff, 1)
-      })
+    it('increment winner rating', () => {
+      return async function() {
+        const newGameValue = await service.game.enrich(result)
+        for(let i = 0; i < 5; i++) {
+          const oldRating = oldGameValue.teams[0].players[i].rating
+          const newRating = newGameValue.teams[0].players[i].rating
+          assert.isAbove(newRating, oldRating)
+        }
+      }()
+    })
+
+    it('decrement loser rating', () => {
+      return async function() {
+        const newGameValue = await service.game.enrich(result)
+        for(let i = 0; i < 5; i++) {
+          const oldRating = oldGameValue.teams[1].players[i].rating
+          const newRating = newGameValue.teams[1].players[i].rating
+          assert.isBelow(newRating, oldRating)
+        }
+      }()
     })
   })
 })
