@@ -7,10 +7,6 @@ interface ITeam {
   rating: number,
 }
 
-interface IEnrichedTeam extends ITeam {
-  players: IPlayer[],
-}
-
 interface IGame {
   _id: ObjectID
   created: Date
@@ -19,8 +15,17 @@ interface IGame {
   canceled: boolean
 }
 
-interface IEnrichedGame extends IGame {
+interface IEnrichedTeam {
+  players: IPlayer[],
+  rating: number,
+}
+
+interface IEnrichedGame {
+  _id: ObjectID
+  created: Date
+  ended?: Date
   teams: IEnrichedTeam[]
+  canceled: boolean
 }
 
 class GameService {
@@ -85,12 +90,10 @@ class GameService {
       canceled: game.canceled,
       teams: [
         {
-          playerIds: game.teams[0].playerIds,
           players: t1Players,
           rating: game.teams[0].rating,
         },
         {
-          playerIds: game.teams[1].playerIds,
           players: t2Players,
           rating: game.teams[1].rating,
         },
