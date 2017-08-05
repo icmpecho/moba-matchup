@@ -14,8 +14,9 @@ declare module "koa" {
 
 const main = async () => {
   const app = new Koa()
-  console.log("Connecting to the database...")
-  app.context.db = await MongoClient.connect('mongodb://localhost:27017/moba')
+  const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/moba'
+  console.log(`Connecting to the database [ ${mongoUri} ]`)
+  app.context.db = await MongoClient.connect(mongoUri)
   app.context.models = new ModelService(app.context.db)
   console.log("Creating indexes..")
   await app.context.models.createIndexes()
