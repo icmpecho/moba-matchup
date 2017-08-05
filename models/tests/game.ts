@@ -7,6 +7,7 @@ import {Service} from '../index'
 describe('GameService', () => {
   let db: Db
   let service: Service
+  let playerIds: string[]
   let players: IPlayer[]
   let game: IGame
   beforeEach(() => {
@@ -19,7 +20,7 @@ describe('GameService', () => {
         const p = await service.player.create(`player-${i}`, i)
         players.push(p)
       }
-      const playerIds = players.map(p => p._id.toHexString())
+      playerIds = players.map(p => p._id.toHexString())
       game = await service.game.create(playerIds)
     }()
   })
@@ -51,6 +52,20 @@ describe('GameService', () => {
       return assert.isRejected(
         service.game.cancel('AAAAAAAAAAAAAAAAAAAAAAAA'))
     })
+
+    it('reject if game is ended', () => {
+      return async function() {
+        await service.game.submitResult(game._id.toHexString(), 0)
+        return assert.isRejected(service.game.cancel(game._id.toHexString()))
+      }()
+    })
+
+    it('reject if game is canceled', () => {
+      return async function() {
+        await service.game.cancel(game._id.toHexString())
+        return assert.isRejected(service.game.cancel(game._id.toHexString()))
+      }()
+    })
   })
 
   describe('#submitResult', () => {
@@ -74,8 +89,12 @@ describe('GameService', () => {
     })
 
     it('reject if game is canceled', () => {
-      return assert.isRejected(service.game.submitResult(
-        game._id.toHexString(), 0))
+      return async function() {
+        const canceledGame = await service.game.create(playerIds)
+        await service.game.cancel(canceledGame._id.toHexString())
+        return assert.isRejected(service.game.submitResult(
+          canceledGame._id.toHexString(), 0))
+      }()
     })
 
     it('increment winner rating', () => {

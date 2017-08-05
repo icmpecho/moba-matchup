@@ -59,7 +59,8 @@ class GameService {
   async cancel(gameId: string): Promise<IGame> {
     const id = new ObjectID(gameId)
     const result = await this.collection.findOneAndUpdate(
-      {_id: id}, {'$set': {canceled: true}}, {returnOriginal: false})
+      {_id: id, winner: {'$exists': false}, canceled: false},
+      {'$set': {canceled: true}}, {returnOriginal: false})
     const game = result.value
     if (!game) {
       throw new Error('Game not found')
