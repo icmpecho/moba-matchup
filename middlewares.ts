@@ -19,4 +19,8 @@ const errorHandler: Koa.Middleware = async (ctx, next) => {
   }
 }
 
-export {errorHandler}
+const spaHandler: Koa.Middleware = async (ctx) => {
+  ctx.body = 'Hello world'
+}
+
+export {errorHandler, spaHandler}

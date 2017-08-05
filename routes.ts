@@ -1,5 +1,5 @@
-import * as Router from "koa-router"
-export const router = new Router()
+import * as Router from 'koa-router'
+const router = new Router()
 const apiRouter = new Router()
 
 
@@ -26,3 +26,5 @@ apiRouter.post('/games', async (ctx) => {
 })
 
 router.use('/api', apiRouter.routes(), apiRouter.allowedMethods())
+
+export {router}
