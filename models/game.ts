@@ -1,7 +1,10 @@
 import {Db, ObjectID, Collection} from 'mongodb'
+import * as _ from 'lodash'
+import {IPlayer} from './player'
 
 interface ITeam {
-  players: ObjectID[]
+  playerIds: ObjectID[],
+  rating: number,
 }
 
 interface IGame {
@@ -49,6 +52,37 @@ class GameService {
       throw new Error('Game not found')
     }
     return result.value
+  }
+
+  async autoCreate(playerIds: string[]): Promise<IGame> {
+    playerIds = _.uniq(playerIds)
+    const pCollection = this.db.collection('players')
+    const players = await pCollection
+      .find({_id: {'$in': _.map(playerIds, x => new ObjectID(x))}})
+      .toArray()
+    const teams = this.assignTeams(players)
+    return this.create(teams[0], teams[1])
+  }
+
+  private assignTeams(players: IPlayer[]): ITeam[] {
+    const sortedPlayers = _.orderBy(players, 'rating', 'desc')
+    let teams: IPlayer[][] = [[], []]
+    sortedPlayers.forEach(p => {
+      teams = _.sortBy(teams, this.teamRating)
+      if(teams[0].length < 5) {
+        teams[0].push(p)
+      } else {
+        teams[1].push(p)
+      }
+    })
+    return [
+      {playerIds: _.map(teams[0], '_id'), rating: this.teamRating(teams[0])},
+      {playerIds: _.map(teams[1], '_id'), rating: this.teamRating(teams[1])},
+    ]
+  }
+
+  private teamRating(team: IPlayer[]): number {
+    return _.sumBy(team, 'rating')
   }
 }
 
