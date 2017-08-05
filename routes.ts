@@ -11,7 +11,7 @@ router.get('/players', async (ctx) => {
 })
 
 router.post('/players', async (ctx) => {
-  const name = ctx.request.body.name
-  const player = await ctx.models.player.create(name)
+  const data = ctx.request.body
+  const player = await ctx.models.player.create(data.name, data.rating)
   ctx.body = player
 })
