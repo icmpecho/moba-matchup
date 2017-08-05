@@ -1,5 +1,4 @@
 import * as Router from "koa-router"
-
 export const router = new Router()
 
 router.get('/', async (ctx) => {
@@ -17,6 +16,6 @@ router.post('/players', async (ctx) => {
     const player = await ctx.models.player.create(name)
     ctx.body = player
   } catch(e) {
-    ctx.status = 400
+    ctx.throw(400, e.message)
   }
 })

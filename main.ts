@@ -20,6 +20,18 @@ const main = async () => {
   console.log("Creating indexes..")
   await app.context.models.createIndexes()
   console.log("Created.")
+
+  app.use(async (ctx, next) => {
+    try { await next() }
+    catch (e) {
+      ctx.status = e.status || 500
+      ctx.type = 'application/json'
+      ctx.body = JSON.stringify({
+        error: e.message
+      })
+      ctx.app.emit('error', e, ctx)
+    }
+  })
   app.use(bodyParser())
   app.use(router.routes())
   app.use(router.allowedMethods())
