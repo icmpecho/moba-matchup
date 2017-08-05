@@ -47,7 +47,8 @@ class GameService {
     ])
   }
 
-  async list(limit=10): Promise<IEnrichedGame[]> {
+  async list(query: {limit?: string}={}): Promise<IEnrichedGame[]> {
+    const limit = parseInt(query.limit) || 10
     const games = await this.collection
       .find({}).sort('created', -1).limit(limit).toArray()
     return Promise.all(_.map(games, x => this.enrich(x)))

@@ -15,7 +15,7 @@ apiRouter.post('/players', async (ctx) => {
 })
 
 apiRouter.get('/games', async (ctx) => {
-  const games = await ctx.models.game.list()
+  const games = await ctx.models.game.list(ctx.request.query)
   ctx.body = games
 })
 
