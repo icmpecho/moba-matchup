@@ -30,6 +30,11 @@ class PlayerService {
     const limit = parseInt(query.limit) || 50
     return this.collection.find({}).sort('name', 1).limit(limit).toArray()
   }
+
+  async get(playerId: string): Promise<IPlayer> {
+    const id = new ObjectID(playerId)
+    return this.collection.findOne({_id: id})
+  }
 }
 
 export {IPlayer, PlayerService}

@@ -14,6 +14,10 @@ apiRouter.post('/players', async (ctx) => {
   ctx.body = player
 })
 
+apiRouter.get('/players/:playerId', async (ctx) => {
+  ctx.body = await ctx.models.player.get(ctx.params.playerId)
+})
+
 apiRouter.get('/games', async (ctx) => {
   const games = await ctx.models.game.list(ctx.request.query)
   ctx.body = games
@@ -22,6 +26,11 @@ apiRouter.get('/games', async (ctx) => {
 apiRouter.post('/games', async (ctx) => {
   const data = ctx.request.body
   const game = await ctx.models.game.create(data.playerIds)
+  ctx.body = await ctx.models.game.enrich(game)
+})
+
+apiRouter.get('/games/:gameId', async (ctx) => {
+  const game = await ctx.models.game.get(ctx.params.gameId)
   ctx.body = await ctx.models.game.enrich(game)
 })
 

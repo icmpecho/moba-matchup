@@ -56,6 +56,11 @@ class GameService {
     return Promise.all(_.map(games, x => this.enrich(x)))
   }
 
+  async get(gameId: string): Promise<IGame> {
+    const id = new ObjectID(gameId)
+    return this.collection.findOne({_id: id})
+  }
+
   async cancel(gameId: string): Promise<IGame> {
     const id = new ObjectID(gameId)
     const result = await this.collection.findOneAndUpdate(
