@@ -4,7 +4,7 @@ const apiRouter = new Router()
 
 
 apiRouter.get('/players', async (ctx) => {
-  const players = await ctx.models.player.list()
+  const players = await ctx.models.player.list(ctx.request.query)
   ctx.body = players
 })
 

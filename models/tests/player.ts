@@ -66,7 +66,7 @@ describe('PlayerService', () => {
 
     it('accept other limit', () => {
       return async function() {
-        const pList = await service.list(5)
+        const pList = await service.list({limit: '5'})
         assert.equal(pList.length, 5)
       }()
     })

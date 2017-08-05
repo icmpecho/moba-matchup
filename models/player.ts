@@ -26,7 +26,8 @@ class PlayerService {
     return this.collection.findOne({_id: inserted.insertedId})
   }
 
-  async list(limit=50): Promise<IPlayer[]> {
+  async list(query: {limit?: string} = {}): Promise<IPlayer[]> {
+    const limit = parseInt(query.limit) || 50
     return this.collection.find({}).sort('name', 1).limit(limit).toArray()
   }
 }
