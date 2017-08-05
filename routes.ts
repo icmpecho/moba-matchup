@@ -25,6 +25,18 @@ apiRouter.post('/games', async (ctx) => {
   ctx.body = await ctx.models.game.enrich(game)
 })
 
+apiRouter.post('/games/:gameId/cancel', async (ctx) => {
+  const game = await ctx.models.game.cancel(ctx.params.gameId)
+  ctx.body = await ctx.models.game.enrich(game)
+})
+
+apiRouter.post('/games/:gameId/submit', async (ctx) => {
+  const data = ctx.request.body
+  const game = await ctx.models.game.submitResult(
+    ctx.params.gameId, data.winner)
+  ctx.body = await ctx.models.game.enrich(game)
+})
+
 router.use('/api', apiRouter.routes(), apiRouter.allowedMethods())
 
 export {router}
