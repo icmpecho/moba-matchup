@@ -13,6 +13,10 @@ router.get('/players', async (ctx) => {
 
 router.post('/players', async (ctx) => {
   const name = ctx.request.body.name
-  const player = await ctx.models.player.create(name)
-  ctx.body = player
+  try {
+    const player = await ctx.models.player.create(name)
+    ctx.body = player
+  } catch(e) {
+    ctx.status = 400
+  }
 })

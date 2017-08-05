@@ -14,6 +14,13 @@ class Service {
     this.gameS = new GameService(db)
   }
 
+  async createIndexes() {
+    await Promise.all([
+      this.playerS.createIndexes(),
+      this.gameS.createIndexes(),
+    ])
+  }
+
   get player(): PlayerService {
     return this.playerS
   }
