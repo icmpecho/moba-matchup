@@ -1,6 +1,7 @@
 import {Db, ObjectID, Collection} from 'mongodb'
 import * as _ from 'lodash'
 import {IPlayer} from './player'
+import {ModelNotFoundError} from './error'
 
 interface ITeam {
   playerIds: ObjectID[],
@@ -58,7 +59,11 @@ class GameService {
 
   async get(gameId: string): Promise<IGame> {
     const id = new ObjectID(gameId)
-    return this.collection.findOne({_id: id})
+    const game = await this.collection.findOne({_id: id})
+    if(_.isNil(game)) {
+      throw new ModelNotFoundError('Game not found')
+    }
+    return game
   }
 
   async cancel(gameId: string): Promise<IGame> {
@@ -67,8 +72,8 @@ class GameService {
       {_id: id, winner: {'$exists': false}, canceled: false},
       {'$set': {canceled: true}}, {returnOriginal: false})
     const game = result.value
-    if (!game) {
-      throw new Error('Game not found')
+    if (_.isNil(game)) {
+      throw new ModelNotFoundError('Active game not found')
     }
     return game
   }
@@ -81,8 +86,8 @@ class GameService {
       {'$set': {winner: winnerTeam, ended: new Date(Date.now())}},
       {returnOriginal: false})
     const game = result.value
-    if (!game) {
-      throw new Error('Game not found')
+    if (_.isNil(game)) {
+      throw new ModelNotFoundError('Active game not found')
     }
     await this.updateRating(game)
     return game

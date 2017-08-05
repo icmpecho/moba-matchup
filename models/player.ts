@@ -1,4 +1,6 @@
+import * as _ from 'lodash'
 import {Db, ObjectID, Collection} from 'mongodb'
+import {ModelNotFoundError} from './error'
 
 interface IPlayer {
   _id: ObjectID
@@ -33,7 +35,11 @@ class PlayerService {
 
   async get(playerId: string): Promise<IPlayer> {
     const id = new ObjectID(playerId)
-    return this.collection.findOne({_id: id})
+    const player = await this.collection.findOne({_id: id})
+    if(_.isNil(player)) {
+      throw new ModelNotFoundError('Player not found')
+    }
+    return player
   }
 }
 

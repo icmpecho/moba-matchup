@@ -1,8 +1,14 @@
 import * as Koa from 'koa'
+import {MongoError} from 'mongodb'
+import {ModelNotFoundError} from './models/error'
 
 const mapStatus = (e: any): number => {
-  if(e.code == 11000) {
-    return 400
+  if(e instanceof MongoError) {
+    if(e.code == 11000) {
+      return 400
+    }
+  } else if(e instanceof ModelNotFoundError) {
+    return 404
   }
   return 500
 }
