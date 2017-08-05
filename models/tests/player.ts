@@ -33,4 +33,31 @@ describe('PlayerService', () => {
       return assert.isRejected(service.create('foo'))
     })
   })
+
+  describe('#list', () => {
+    let players: IPlayer[]
+    beforeEach(() => {
+      return async function() {
+        let results: Promise<IPlayer>[] = []
+        for(let i = 0; i < 20; i++) {
+          results.push(service.create(`player-${i}`))
+        }
+        players = await Promise.all(results)
+      }()
+    })
+
+    it('return list of 10 players by default', () => {
+      return async function() {
+        const pList = await service.list()
+        assert.equal(pList.length, 10)
+      }()
+    })
+
+    it('accept other limit', () => {
+      return async function() {
+        const pList = await service.list(5)
+        assert.equal(pList.length, 5)
+      }()
+    })
+  })
 })

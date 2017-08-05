@@ -1,4 +1,4 @@
-import {Db, ObjectID, Collection} from "mongodb"
+import {Db, ObjectID, Collection} from 'mongodb'
 
 interface IPlayer {
   _id: ObjectID
@@ -22,6 +22,10 @@ class PlayerService {
   async create(name: string): Promise<IPlayer> {
     const inserted = await this.collection.insertOne({name: name})
     return this.collection.findOne({_id: inserted.insertedId})
+  }
+
+  async list(limit=10): Promise<IPlayer[]> {
+    return this.collection.find({}).sort('name', 1).limit(limit).toArray()
   }
 }
 
