@@ -3,6 +3,7 @@ import {Db, ObjectID, Collection} from 'mongodb'
 interface IPlayer {
   _id: ObjectID
   name: string
+  rating: number
 }
 
 class PlayerService {
@@ -19,8 +20,9 @@ class PlayerService {
     await this.collection.createIndex({name: 1}, {unique: true})
   }
 
-  async create(name: string): Promise<IPlayer> {
-    const inserted = await this.collection.insertOne({name: name})
+  async create(name: string, rating=0): Promise<IPlayer> {
+    const inserted = await this.collection.insertOne({
+      name: name, rating: rating})
     return this.collection.findOne({_id: inserted.insertedId})
   }
 

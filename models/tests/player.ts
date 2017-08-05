@@ -25,12 +25,23 @@ describe('PlayerService', () => {
       assert.equal(createdPlayer.name, 'foo')
     })
 
+    it('has default rating of 0', () => {
+      assert.equal(createdPlayer.rating, 0)
+    })
+
     it('actually saved the player', () => {
       return assert.eventually.equal(db.collection('players').count({}), 1)
     })
 
     it('reject player with the duplicated name', () => {
       return assert.isRejected(service.create('foo'))
+    })
+
+    it('allow initial rating overide', () => {
+      return async function () {
+        const p = await service.create('bar', 10)
+        assert.equal(p.rating, 10)
+      }()
     })
   })
 
