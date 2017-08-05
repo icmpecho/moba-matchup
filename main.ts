@@ -1,6 +1,7 @@
 import * as Koa from 'koa'
 import * as bodyParser from 'koa-bodyparser'
 import {router} from './routes'
+import {errorHandler} from './middlewares'
 import {Service as ModelService} from './models'
 import {MongoClient, Db} from 'mongodb'
 
@@ -21,17 +22,7 @@ const main = async () => {
   await app.context.models.createIndexes()
   console.log("Created.")
 
-  app.use(async (ctx, next) => {
-    try { await next() }
-    catch (e) {
-      ctx.status = e.status || 500
-      ctx.type = 'application/json'
-      ctx.body = JSON.stringify({
-        error: e.message
-      })
-      ctx.app.emit('error', e, ctx)
-    }
-  })
+  app.use(errorHandler)
   app.use(bodyParser())
   app.use(router.routes())
   app.use(router.allowedMethods())
