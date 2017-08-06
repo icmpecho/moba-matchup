@@ -8,6 +8,7 @@ Vue.use(Router)
 export default new Router({
   mode: 'history',
   routes: [
+    { path: '/', redirect: '/games' },
     { path: '/players', component: Players },
     { path: '/games', component: Games },
   ]
