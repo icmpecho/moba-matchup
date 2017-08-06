@@ -6,6 +6,16 @@ A web application aim to solve imbalance private MOBA matches within group of fr
 - Keep track of players rating based on previous matches results
 - Auto balance team within the input group of players based on player rating
 
+## WebUI
+
+    GET /*
+
+Get request to any path except `/api/*` and `/static/` will return `index.html` to support SPA route
+
+    GET /static/*
+
+Will serve anything under `public/` directory
+
 ## API
 ### Players
 #### list
@@ -81,6 +91,8 @@ If somehow accidently create a game and don't want to play, use this endpoint to
 - Koa
 - official MongoDB driver
 - Mocha
+- Vue
+- Webpack
 
 ### Requirements
 - NodeJS with version > 7.6.0 (only tested with 8.2.1)
@@ -89,6 +101,7 @@ If somehow accidently create a game and don't want to play, use this endpoint to
 ### How to run
 - Set `MONGO_URI` environment variable to your MongoDB database (defaulted to mongodb://localhost:27017/moba)
 - `npm install`
+- `npm run build` to build frontend scripts
 - `npm start` this will compile ts into js and run
 
 ### How to run unit test
