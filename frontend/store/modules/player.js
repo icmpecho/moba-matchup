@@ -1,4 +1,5 @@
 import * as $ from 'jquery'
+import * as _ from 'lodash'
 
 export default {
   namespaced: true,
@@ -7,7 +8,14 @@ export default {
   },
   mutations: {
     refreshPlayers(state, players) {
-      state.players = players
+      state.players = _.map(players, p => {
+        p.selected = false
+        return p
+      })
+    },
+    toggleSelection(state, playerId) {
+      const player = _.find(state.players, {'_id': playerId})
+      player.selected = !player.selected
     }
   },
   actions: {
