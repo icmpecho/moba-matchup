@@ -136,8 +136,15 @@ class GameService {
 
   private assignTeams(players: IPlayer[]): ITeam[] {
     const sortedPlayers = _.orderBy(players, 'rating', 'desc')
+    const weakestPlayer = _.last(players)
+    const lowestRating = weakestPlayer.rating
+    const adjustment = lowestRating < 0 ? Math.abs(lowestRating) : 0
+    const adjustedPlayers = _.map(sortedPlayers, p => {
+      p.rating += adjustment
+      return p
+    })
     let teams: IPlayer[][] = [[], []]
-    sortedPlayers.forEach(p => {
+    adjustedPlayers.forEach(p => {
       teams = _.sortBy(teams, this.teamRating)
       if(teams[0].length < 5) {
         teams[0].push(p)
