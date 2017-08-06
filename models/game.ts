@@ -83,7 +83,6 @@ class GameService {
 
   async submitResult(
     gameId: string, winnerTeam: number): Promise<IGame> {
-    console.log(gameId, winnerTeam)
     const id = new ObjectID(gameId)
     const result = await this.collection.findOneAndUpdate(
       {
