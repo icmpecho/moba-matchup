@@ -9,7 +9,7 @@ export default new Router({
   mode: 'history',
   routes: [
     { path: '/', redirect: '/games' },
-    { path: '/players', component: Players },
-    { path: '/games', component: Games },
+    { path: '/players', name: 'players', component: Players },
+    { path: '/games', name: 'games', component: Games },
   ]
 })

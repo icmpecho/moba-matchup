@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <Navbar></Navbar>
+    <Navbar :current="$route.name"></Navbar>
     <router-view></router-view>
   </div>
 </template>
