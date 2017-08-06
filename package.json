@@ -12,13 +12,17 @@
   "dependencies": {
     "@types/koa": "^2.0.39",
     "@types/koa-bodyparser": "^3.0.23",
+    "@types/koa-mount": "^2.0.18",
     "@types/koa-router": "^7.0.22",
+    "@types/koa-static": "^3.0.0",
     "@types/lodash": "^4.14.71",
     "@types/mongodb": "^2.2.9",
     "@types/node": "^8.0.19",
     "koa": "^2.3.0",
     "koa-bodyparser": "^4.2.0",
+    "koa-mount": "^3.0.0",
     "koa-router": "^7.2.1",
+    "koa-static": "^4.0.1",
     "lodash": "^4.17.4",
     "mongodb": "^2.2.30",
     "typescript": "^2.4.2"
