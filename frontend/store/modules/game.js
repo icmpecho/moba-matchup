@@ -1,6 +1,6 @@
 import * as $ from 'jquery'
 import * as _ from 'lodash'
-
+import Vue from 'vue'
 
 export default {
   namespaced: true,
@@ -13,6 +13,11 @@ export default {
     refreshGames(state, games) {
       state.games = games
     },
+
+    updateGame(state, game) {
+      const index = _.findIndex(state.games, {_id: game._id})
+      Vue.set(state.games, index, game)
+    }
   },
 
   actions: {
@@ -22,6 +27,17 @@ export default {
           commit('refreshGames', data)
         } else {
           console.log(`[${status}] /api/games`)
+        }
+      })
+    },
+
+    cancelGame({commit}, gameId) {
+      const url = `/api/games/${gameId}/cancel`
+      $.post(url).then((data, status) => {
+        if(status == 'success') {
+          commit('updateGame', data)
+        } else {
+          console.log(`[${status}] POST ${url}`)
         }
       })
     }

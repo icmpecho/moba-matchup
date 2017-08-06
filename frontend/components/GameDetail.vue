@@ -15,6 +15,13 @@
       </div>
     </div>
   </div>
+  <div class="panel-footer" v-if="gameStatus == 'In Progress'">
+    <div class="text-right">
+      <button type="button" class="btn btn-danger" @click="cancel">
+        Cancel
+      </button>
+    </div>
+  </div>
 </div>
 </template>
 
@@ -45,6 +52,11 @@ export default {
         return 'panel-default'
       }
     }
+  },
+  methods: {
+    cancel() {
+      this.$store.dispatch('game/cancelGame', this.game._id)
+    },
   },
   components: {
     TeamDetail
