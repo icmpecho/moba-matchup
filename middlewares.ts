@@ -1,4 +1,5 @@
 import * as Koa from 'koa'
+import * as send from 'koa-send'
 import {MongoError} from 'mongodb'
 import {ModelNotFoundError} from './models/error'
 
@@ -26,7 +27,7 @@ const errorHandler: Koa.Middleware = async (ctx, next) => {
 }
 
 const spaHandler: Koa.Middleware = async (ctx) => {
-  ctx.body = 'Hello world'
+  await send(ctx, 'public/index.html')
 }
 
 export {errorHandler, spaHandler}
