@@ -25,6 +25,8 @@ const main = async () => {
     process.env.MONGO_URI ||
     process.env.MONGODB_URI ||
     'mongodb://localhost:27017/moba'
+  
+  const port = process.env.PORT || 3000
 
   console.log(`Connecting to the database [ ${mongoUri} ]`)
   app.context.db = await MongoClient.connect(mongoUri)
@@ -39,8 +41,8 @@ const main = async () => {
   app.use(router.allowedMethods())
   app.use(mount('/static', staticFiles))
   app.use(spaHandler)
-  console.log("Listening on port 3000.")
-  app.listen(3000)
+  console.log(`Listening on port ${port}.`)
+  app.listen(port)
 }
 
 main()
