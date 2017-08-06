@@ -6,7 +6,8 @@
   "scripts": {
     "start": "tsc && node dist/main.js",
     "test": "tsc && mocha dist/models/tests --recursive",
-    "build": "webpack -p"
+    "build": "webpack",
+    "heroku-postbuild": "webpack -p"
   },
   "author": "",
   "license": "ISC",
