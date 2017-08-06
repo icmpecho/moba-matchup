@@ -7,16 +7,15 @@
 
 <script>
 import PlayerList from '../components/PlayerList.vue'
+import {mapState} from 'vuex'
 
 export default {
   data: function () {
-    return {
-      players: [
-        {_id: 'aaa', name: 'Player-1', rating: 1},
-        {_id: 'bbb', name: 'Player-2', rating: 2},
-        {_id: 'ccc', name: 'Player-3', rating: 2},
-        {_id: 'ddd', name: 'Player-4', rating: 2},
-      ]
+    return {}
+  },
+  computed: {
+    players: function () {
+      return this.$store.state.player.players
     }
   },
   components: {
