@@ -4,10 +4,15 @@ module.exports = {
   entry: './frontend/index.js',
   output: {
     filename: 'bundle.js',
-    path: path.resolve(__dirname, 'public')
+    path: path.resolve(__dirname, 'public'),
+    publicPath: "/static/"
   },
   module: {
     rules:[
+      {
+        test: /\.vue$/,
+        loader: 'vue-loader',
+      },
       {
         test: /\.css$/,
         use: [
