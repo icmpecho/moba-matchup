@@ -1,17 +1,17 @@
 <template>
 <div class="container">
   <h1>Games</h1>
-  <GameDetail :game="game"></GameDetail>
+  <GameList :games="games"></GameList>
 </div>
 </template>
 
 <script>
-import GameDetail from '../components/GameDetail.vue'
+import GameList from '../components/GameList.vue'
 
 export default {
   data: function () {
     return {
-      game: {
+      games: [{
         _id: 'aaa',
         created: '2017-08-06T13:28:25Z',
         teams: [
@@ -47,11 +47,11 @@ export default {
           }
         ],
         canceled: false
-      }
+      }]
     }
   },
   components: {
-    GameDetail
+    GameList
   }
 }
 </script>
