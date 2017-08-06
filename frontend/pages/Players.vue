@@ -4,7 +4,7 @@
     <div class="col-xs-12 col-md-8">
       <h1>Players</h1>
     </div>
-    <div class="col-xs-12 col-md-4">
+    <div class="col-xs-6 col-md-4">
        <CreateGameButton :playersCount="selectedPlayersCount"></CreateGameButton>
     </div>
   </div>
