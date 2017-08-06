@@ -13,6 +13,7 @@
   "dependencies": {
     "@types/koa": "^2.0.39",
     "@types/koa-bodyparser": "^3.0.23",
+    "@types/koa-compress": "^2.0.6",
     "@types/koa-mount": "^2.0.18",
     "@types/koa-router": "^7.0.22",
     "@types/koa-send": "^3.3.0",
@@ -22,6 +23,7 @@
     "@types/node": "^8.0.19",
     "koa": "^2.3.0",
     "koa-bodyparser": "^4.2.0",
+    "koa-compress": "^2.0.0",
     "koa-mount": "^3.0.0",
     "koa-router": "^7.2.1",
     "koa-send": "^4.1.0",

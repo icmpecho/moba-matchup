@@ -1,4 +1,6 @@
+import * as zlib from 'zlib'
 import * as Koa from 'koa'
+import * as compress from 'koa-compress'
 import * as mount from 'koa-mount'
 import * as serve from 'koa-static'
 import * as bodyParser from 'koa-bodyparser'
@@ -26,6 +28,7 @@ const main = async () => {
   console.log("Creating indexes..")
   await app.context.models.createIndexes()
 
+  app.use(compress({threshold: 2048, flush: zlib.Z_SYNC_FLUSH}))
   app.use(errorHandler)
   app.use(bodyParser())
   app.use(router.routes())
