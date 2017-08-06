@@ -11,7 +11,7 @@ export default {
     btnClass() {
       if(this.playersCount == 10) {
         return 'btn-success'
-      } else if(this.playersCount > 0) {
+      } else if(this.playersCount > 1) {
         return 'btn-warning'
       } else {
         return 'btn-danger'

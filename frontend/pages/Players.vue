@@ -5,7 +5,8 @@
       <h1>Players</h1>
     </div>
     <div class="col-xs-6 col-md-4">
-       <CreateGameButton :playersCount="selectedPlayersCount"></CreateGameButton>
+       <CreateGameButton :playersCount="selectedPlayersCount" @click.native="createGame">
+       </CreateGameButton>
     </div>
   </div>
   <PlayerList :players="players"></PlayerList>
@@ -27,6 +28,11 @@ export default {
     },
     selectedPlayersCount: function () {
       return this.$store.getters['player/selectedPlayersCount']
+    }
+  },
+  methods: {
+    createGame: function () {
+      this.$store.dispatch('player/createGame')
     }
   },
   components: {
