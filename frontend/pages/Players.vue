@@ -20,6 +20,9 @@ export default {
   },
   components: {
     PlayerList
+  },
+  created: function () {
+    this.$store.dispatch('player/refreshPlayers')
   }
 }
 </script>
