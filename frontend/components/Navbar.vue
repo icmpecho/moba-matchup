@@ -7,12 +7,12 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="#">MOBA Matchup</a>
+        <a class="navbar-brand">MOBA Matchup</a>
       </div>
       <div class="collapse navbar-collapse" id="nav-menu">
         <ul class="nav navbar-nav">
-          <li :class="gamesBtnClasses"><a href="#">Matches</a></li>
-          <li :class="playersBtnClasses"><a href="#">Players</a></li>
+          <li :class="gamesBtnClasses"><router-link to="/games">Games</router-link></li>
+          <li :class="playersBtnClasses"><router-link to="/players">Players</router-link></li>
         </ul>
       </div>
     </div>

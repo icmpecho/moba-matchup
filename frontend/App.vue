@@ -1,5 +1,8 @@
 <template>
-<Navbar current="players"></Navbar>
+  <div id="app">
+    <Navbar></Navbar>
+    <router-view></router-view>
+  </div>
 </template>
 
 <script>
