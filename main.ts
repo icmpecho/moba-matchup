@@ -21,7 +21,11 @@ const main = async () => {
   const staticFiles = new Koa()
   staticFiles.use(serve('public'))
 
-  const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/moba'
+  const mongoUri = 
+    process.env.MONGO_URI ||
+    process.env.MONGODB_URI ||
+    'mongodb://localhost:27017/moba'
+
   console.log(`Connecting to the database [ ${mongoUri} ]`)
   app.context.db = await MongoClient.connect(mongoUri)
   app.context.models = new ModelService(app.context.db)
