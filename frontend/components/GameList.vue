@@ -1,7 +1,9 @@
 <<template>
 <div>
   <div class="row" v-for="game in games" :key="game._id">
-    <GameDetail :game="game"></GameDetail>
+    <div class="col-xs-12">
+      <GameDetail :game="game"></GameDetail>
+    </div>
   </div>
 </div>
 </template>
