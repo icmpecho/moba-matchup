@@ -1,11 +1,17 @@
 import * as $ from 'jquery'
 import * as _ from 'lodash'
 
+const selectedPlayersCount = (state) => {
+  return _.filter(state.players, 'selected').length
+}
+
 export default {
   namespaced: true,
+
   state: {
     players: []
   },
+
   mutations: {
     refreshPlayers(state, players) {
       state.players = _.map(players, p => {
@@ -15,9 +21,14 @@ export default {
     },
     toggleSelection(state, playerId) {
       const player = _.find(state.players, {'_id': playerId})
-      player.selected = !player.selected
+      if(player.selected) {
+        player.selected = false
+      } else if(selectedPlayersCount(state) < 10) {
+        player.selected = true
+      }
     }
   },
+
   actions: {
     refreshPlayers({commit}) {
       $.get("/api/players").then((data, status) => {
@@ -28,5 +39,9 @@ export default {
         }
       })
     }
+  },
+
+  getters: {
+    selectedPlayersCount
   }
 }
