@@ -69,7 +69,10 @@ class GameService {
   async cancel(gameId: string): Promise<IGame> {
     const id = new ObjectID(gameId)
     const result = await this.collection.findOneAndUpdate(
-      {_id: id, winner: {'$exists': false}, canceled: false},
+      {
+        _id: id, '$or': [{winner: {'$exists': false}}, {winner: null}],
+        canceled: false
+      },
       {'$set': {canceled: true}}, {returnOriginal: false})
     const game = result.value
     if (_.isNil(game)) {
@@ -80,9 +83,13 @@ class GameService {
 
   async submitResult(
     gameId: string, winnerTeam: number): Promise<IGame> {
+    console.log(gameId, winnerTeam)
     const id = new ObjectID(gameId)
     const result = await this.collection.findOneAndUpdate(
-      {_id: id, winner: {'$exists': false}, canceled: false},
+      {
+        _id: id, '$or': [{winner: {'$exists': false}}, {winner: null}],
+        canceled: false
+      },
       {'$set': {winner: winnerTeam, ended: new Date(Date.now())}},
       {returnOriginal: false})
     const game = result.value

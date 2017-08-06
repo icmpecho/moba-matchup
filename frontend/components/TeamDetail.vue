@@ -10,6 +10,13 @@
       {{player.name}} <span class="badge">{{player.rating}}</span>
     </li>
   </ul>
+  <div class="panel-footer" v-if="gameIsInProgress">
+    <div class="text-right">
+      <button type="button" class="btn btn-success" @click="submitWinner">
+        Win
+      </button>
+    </div>
+  </div>
 </div>
 </template>
 
@@ -32,6 +39,15 @@ export default {
       } else {
         return 'panel-default'
       }
+    },
+    gameIsInProgress() {
+      return _.isNil(this.game.winner) && !this.game.canceled
+    }
+  },
+  methods: {
+    submitWinner() {
+      this.$store.dispatch('game/submitWinner',
+        { gameId: this.game._id, winner: this.teamId })
     }
   }
 }

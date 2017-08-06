@@ -40,6 +40,18 @@ export default {
           console.log(`[${status}] POST ${url}`)
         }
       })
+    },
+
+    submitWinner({commit}, data) {
+      const url = `/api/games/${data.gameId}/submit`
+      const payload = {winner: data.winner}
+      $.post(url, payload).then((data, status) => {
+        if(status == 'success') {
+          commit('updateGame', data)
+        } else {
+          console.log(`[${status}] POST ${url}`)
+        }
+      })
     }
   },
 }
