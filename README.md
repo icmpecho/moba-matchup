@@ -101,8 +101,9 @@ If somehow accidently create a game and don't want to play, use this endpoint to
 ### How to run
 - Set `MONGO_URI` environment variable to your MongoDB database (defaulted to mongodb://localhost:27017/moba)
 - `npm install`
-- `npm run build` to build frontend scripts
-- `npm start` this will compile ts into js and run
+- `npm run build` to compile typescript and run webpack
+- `npm start` this start the koa server
+- visit your server at http://localhost:3000/
 
 ### How to run unit test
 - `npm test`
