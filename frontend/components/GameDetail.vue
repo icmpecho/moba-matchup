@@ -15,7 +15,7 @@
       </div>
     </div>
   </div>
-  <div class="panel-footer" v-if="gameStatus == 'In Progress'">
+  <div class="panel-footer" v-if="game.active">
     <div class="text-right">
       <button type="button" class="btn btn-danger" @click="cancel">
         Cancel

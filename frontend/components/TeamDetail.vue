@@ -10,7 +10,7 @@
       {{player.name}} <span class="badge">{{player.rating}}</span>
     </li>
   </ul>
-  <div class="panel-footer" v-if="gameIsInProgress">
+  <div class="panel-footer" v-if="game.active">
     <div class="text-right">
       <button type="button" class="btn btn-success" @click="submitWinner">
         Win
@@ -40,9 +40,6 @@ export default {
         return 'panel-default'
       }
     },
-    gameIsInProgress() {
-      return _.isNil(this.game.winner) && !this.game.canceled
-    }
   },
   methods: {
     submitWinner() {
