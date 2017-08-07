@@ -7,10 +7,12 @@
   "description": "",
   "main": "dist/main.js",
   "scripts": {
-    "start": "tsc && node dist/main.js",
+    "start": "node dist/main.js",
     "test": "tsc && mocha dist/models/tests --recursive",
-    "build": "webpack",
-    "heroku-postbuild": "webpack -p"
+    "build:back": "tsc",
+    "build:front": "webpack -p",
+    "build": "tsc && webpack -p",
+    "heroku-postbuild": "tsc && webpack -p"
   },
   "author": "",
   "license": "ISC",
