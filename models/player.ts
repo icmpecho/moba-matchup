@@ -30,7 +30,7 @@ class PlayerService {
 
   async list(query: {limit?: string} = {}): Promise<IPlayer[]> {
     const limit = parseInt(query.limit) || 50
-    return this.collection.find({}).sort('name', 1).limit(limit).toArray()
+    return this.collection.find({}).sort('rating', -1).limit(limit).toArray()
   }
 
   async get(playerId: string): Promise<IPlayer> {
