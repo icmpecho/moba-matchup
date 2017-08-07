@@ -29,6 +29,7 @@ interface IEnrichedGame {
   winner?: number
   teams: IEnrichedTeam[]
   canceled: boolean
+  active: boolean
 }
 
 const activeQuery = {
@@ -123,6 +124,7 @@ class GameService {
       ended: game.ended,
       canceled: game.canceled,
       winner: game.winner,
+      active: this.isActive(game),
       teams: [
         {
           players: t1Players,
@@ -172,6 +174,10 @@ class GameService {
     }
     const inserted = await this.collection.insertOne(game)
     return this.collection.findOne({_id: inserted.insertedId})
+  }
+
+  private isActive(game: IGame): boolean {
+    return _.isNil(game.winner) && !game.canceled
   }
 
   private async updateRating(game: IGame) {
