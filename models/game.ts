@@ -59,10 +59,13 @@ class GameService {
     ])
   }
 
-  async list(query: {limit?: string}={}): Promise<IEnrichedGame[]> {
-    const limit = parseInt(query.limit) || 10
+  async list(query:any={}): Promise<IEnrichedGame[]> {
+    let filter: any = {}
+    if(!(query.showCanceled in ['true', 'True', 't', 'T', '1'])){
+      filter.canceled = false
+    }
     const games = await this.collection
-      .find({}).sort('created', -1).limit(limit).toArray()
+      .find(filter).sort('created', -1).limit(10).toArray()
     return Promise.all(_.map(games, x => this.enrich(x)))
   }
 
