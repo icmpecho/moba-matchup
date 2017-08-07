@@ -146,7 +146,7 @@ class GameService {
     let teams: IPlayer[][] = [[], []]
     adjustedPlayers.forEach(p => {
       teams = _.sortBy(teams, this.teamRating)
-      if(teams[0].length < 5) {
+      if(teams[0].length < adjustedPlayers.length/2) {
         teams[0].push(p)
       } else {
         teams[1].push(p)
