@@ -1,7 +1,7 @@
 <<template>
 <div class="panel" :class="panelClass">
   <div class="panel-heading">
-    <h3 class="panel-title">{{gameStatus}}</h3>
+    <h3 class="panel-title">{{created}}<span class="pull-right">{{gameStatus}}</span></h3>
   </div>
   <div class="panel-body">
   </div>
@@ -27,6 +27,7 @@
 
 <<script>
 import * as _ from 'lodash'
+import * as moment from 'moment'
 import TeamDetail from './TeamDetail.vue'
 
 export default {
@@ -51,6 +52,9 @@ export default {
       } else {
         return 'panel-default'
       }
+    },
+    created() {
+      return moment(this.game.created).fromNow()
     }
   },
   methods: {
