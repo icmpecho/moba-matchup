@@ -31,6 +31,14 @@ interface IEnrichedGame {
   canceled: boolean
 }
 
+const activeQuery = {
+  '$or': [
+    { winner: { '$exists': false } },
+    { winner: null },
+  ],
+  canceled: false,
+}
+
 class GameService {
 
   private db: Db
@@ -69,10 +77,7 @@ class GameService {
   async cancel(gameId: string): Promise<IGame> {
     const id = new ObjectID(gameId)
     const result = await this.collection.findOneAndUpdate(
-      {
-        _id: id, '$or': [{winner: {'$exists': false}}, {winner: null}],
-        canceled: false
-      },
+      _.assign({_id: id}, activeQuery),
       {'$set': {canceled: true}}, {returnOriginal: false})
     const game = result.value
     if (_.isNil(game)) {
@@ -85,10 +90,7 @@ class GameService {
     gameId: string, winnerTeam: number): Promise<IGame> {
     const id = new ObjectID(gameId)
     const result = await this.collection.findOneAndUpdate(
-      {
-        _id: id, '$or': [{winner: {'$exists': false}}, {winner: null}],
-        canceled: false
-      },
+      _.assign({_id: id}, activeQuery),
       {'$set': {winner: winnerTeam, ended: new Date(Date.now())}},
       {returnOriginal: false})
     const game = result.value
@@ -134,22 +136,15 @@ class GameService {
     }
   }
 
-  private playerString(player: IPlayer) {
-    return `${player.name}(${player.rating})`
-  }
-
   private assignTeams(players: IPlayer[]): ITeam[] {
     const sortedPlayers = _.orderBy(players, 'rating', 'desc')
-    console.log('sortedPlayers', _.map(sortedPlayers, p => this.playerString(p)))
     const weakestPlayer = sortedPlayers[sortedPlayers.length - 1]
-    console.log('weakestPlayer', this.playerString(weakestPlayer))
     const lowestRating = weakestPlayer.rating
     const adjustment = lowestRating < 0 ? Math.abs(lowestRating) : 0
     const adjustedPlayers = _.map(sortedPlayers, p => {
       p.rating += adjustment
       return p
     })
-    console.log('adjustedPlayers', _.map(adjustedPlayers, p => this.playerString(p)))
     let teams: IPlayer[][] = [[], []]
     adjustedPlayers.forEach(p => {
       teams = _.sortBy(teams, this.teamRating)
