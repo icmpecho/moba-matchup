@@ -9,7 +9,7 @@
        </CreateGameButton>
     </div>
     <div class="col-xs-6 col-md-2">
-       <button type="button" class="btn" @click="clear">Clear All Selection</button>
+       <button type="button" class="btn btn-default" @click="clear">Clear All Selection</button>
     </div>
   </div>
   <PlayerList :players="players"></PlayerList>
