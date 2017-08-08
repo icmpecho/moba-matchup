@@ -20,6 +20,12 @@ export default {
         return p
       })
     },
+    clearAllSelection(state) {
+      state.players = _.map(state.players, p => {
+        p.selected = false
+        return p
+      })
+    },
     toggleSelection(state, playerId) {
       const player = _.find(state.players, {'_id': playerId})
       if(player.selected) {
@@ -40,7 +46,9 @@ export default {
         }
       })
     },
-
+    clearAllSelection({commit}) {
+      commit('clearAllSelection')
+    },
     createGame({commit, state}) {
       const selectedPlayers = _.filter(state.players, 'selected')
       if(selectedPlayers.length <= 1) {

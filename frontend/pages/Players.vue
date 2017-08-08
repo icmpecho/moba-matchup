@@ -4,9 +4,12 @@
     <div class="col-xs-12 col-md-8">
       <h1>Players</h1>
     </div>
-    <div class="col-xs-6 col-md-4">
+    <div class="col-xs-6 col-md-2">
        <CreateGameButton :playersCount="selectedPlayersCount" @click.native="createGame">
        </CreateGameButton>
+    </div>
+    <div class="col-xs-6 col-md-2">
+       <button type="button" class="btn" @click="clear">Clear All Selection</button>
     </div>
   </div>
   <PlayerList :players="players"></PlayerList>
@@ -33,6 +36,9 @@ export default {
   methods: {
     createGame: function () {
       this.$store.dispatch('player/createGame')
+    },
+    clear: function () {
+       this.$store.dispatch('player/clearAllSelection')
     }
   },
   components: {
