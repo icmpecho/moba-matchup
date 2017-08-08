@@ -1,18 +1,24 @@
 <template>
-<div class="container">
-  <div class="row">
-    <div class="col-xs-12 col-md-8">
-      <h1>Players</h1>
-    </div>
-    <div class="col-xs-6 col-md-2">
-       <CreateGameButton :playersCount="selectedPlayersCount" @click.native="createGame">
-       </CreateGameButton>
-    </div>
-    <div class="col-xs-6 col-md-2">
-       <button type="button" class="btn btn-default" @click="clear">Clear All Selection</button>
+<div>
+  <div class="container">
+    <div id="header">
+      <div class="row">
+        <div class="col-xs-12 col-md-8">
+          <h1>Players</h1>
+        </div>
+        <div class="col-xs-6 col-md-2">
+          <CreateGameButton :playersCount="selectedPlayersCount" @click.native="createGame">
+          </CreateGameButton>
+        </div>
+        <div class="col-xs-6 col-md-2">
+          <button type="button" class="btn btn-default" @click="clear">Clear All Selection</button>
+        </div>
+      </div>
     </div>
   </div>
-  <PlayerList :players="players"></PlayerList>
+  <div class="container">
+    <PlayerList :players="players"></PlayerList>
+  </div>
 </div>
 </template>
 
@@ -47,6 +53,15 @@ export default {
   },
   created: function () {
     this.$store.dispatch('player/refreshPlayers')
+  },
+  mounted: function () {
+    const refreshAffix = () => {
+      console.log(`affix ${$('nav').outerHeight()}`)
+      $('#header').data('bs.affix').options.offset = $('nav').outerHeight()
+    }
+    $('#nav-menu').on('shown.bs.collapse', refreshAffix)
+    $('#nav-menu').on('hidden.bs.collapse', refreshAffix)
+    $('#header').affix({offset: {top: $('nav').outerHeight()}})
   }
 }
 </script>
@@ -57,5 +72,17 @@ h1 {
 }
 table {
   margin-top: 10px
+}
+#header {
+  background-color: white
+}
+.affix {
+  top: 0;
+  width: 100%;
+  padding-top: 20px;
+  padding-bottom: 10px
+}
+.affix-top {
+  width: 100%
 }
 </style>
