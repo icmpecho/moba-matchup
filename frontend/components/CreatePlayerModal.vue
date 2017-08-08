@@ -13,13 +13,11 @@
           <h4 class="modal-title">Create Player</h4>
         </div>
         <div class="modal-body">
-          <form v-vuex-form='submit'>
-            <fieldset>
-              <div class="form-group">
-                <label for="inputPlayerId">Player ID</label>
-                <input type="text" class="form-control" id="inputPlayerId" placeholder="Rov ID">
-              </div>
-            </fieldset>
+          <form>
+            <div class="form-group">
+              <label for="inputPlayerId">Player ID</label>
+              <input type="text" class="form-control" id="inputPlayerId" placeholder="Rov ID">
+            </div>
           </form>
         </div>
         <div class="modal-footer">
