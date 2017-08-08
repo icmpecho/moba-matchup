@@ -1,7 +1,7 @@
 <template>
 <div>
-  <div class="container">
-    <div id="header">
+  <div id="header">
+    <div class="container">
       <div class="row">
         <div class="col-xs-12 col-md-8">
           <h1>Players</h1>
@@ -11,7 +11,9 @@
           </CreateGameButton>
         </div>
         <div class="col-xs-6 col-md-2">
-          <button type="button" class="btn btn-default" @click="clear">Clear All Selection</button>
+          <button type="button" class="btn btn-default" @click="clear">
+            Clear All Selection
+          </button>
         </div>
       </div>
     </div>
