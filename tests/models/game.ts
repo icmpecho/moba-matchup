@@ -1,8 +1,8 @@
 import {Db} from 'mongodb'
-import {assert, testDB} from './helper'
-import {IGame, IEnrichedGame} from '../game'
-import {IPlayer} from '../player'
-import {Service} from '../index'
+import {assert, testDB} from '../helper'
+import {IGame, IEnrichedGame} from '../../models/game'
+import {IPlayer} from '../../models/player'
+import {Service} from '../../models'
 
 describe('GameService', () => {
   let db: Db

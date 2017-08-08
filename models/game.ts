@@ -29,6 +29,15 @@ interface IEnrichedGame {
   winner?: number
   teams: IEnrichedTeam[]
   canceled: boolean
+  active: boolean
+}
+
+const activeQuery = {
+  '$or': [
+    { winner: { '$exists': false } },
+    { winner: null },
+  ],
+  canceled: false,
 }
 
 class GameService {
@@ -50,10 +59,13 @@ class GameService {
     ])
   }
 
-  async list(query: {limit?: string}={}): Promise<IEnrichedGame[]> {
-    const limit = parseInt(query.limit) || 10
+  async list(query:any={}): Promise<IEnrichedGame[]> {
+    let filter: any = {}
+    if(!(query.showCanceled in ['true', 'True', 't', 'T', '1'])){
+      filter.canceled = false
+    }
     const games = await this.collection
-      .find({}).sort('created', -1).limit(limit).toArray()
+      .find(filter).sort('created', -1).limit(10).toArray()
     return Promise.all(_.map(games, x => this.enrich(x)))
   }
 
@@ -69,10 +81,7 @@ class GameService {
   async cancel(gameId: string): Promise<IGame> {
     const id = new ObjectID(gameId)
     const result = await this.collection.findOneAndUpdate(
-      {
-        _id: id, '$or': [{winner: {'$exists': false}}, {winner: null}],
-        canceled: false
-      },
+      _.assign({_id: id}, activeQuery),
       {'$set': {canceled: true}}, {returnOriginal: false})
     const game = result.value
     if (_.isNil(game)) {
@@ -85,10 +94,7 @@ class GameService {
     gameId: string, winnerTeam: number): Promise<IGame> {
     const id = new ObjectID(gameId)
     const result = await this.collection.findOneAndUpdate(
-      {
-        _id: id, '$or': [{winner: {'$exists': false}}, {winner: null}],
-        canceled: false
-      },
+      _.assign({_id: id}, activeQuery),
       {'$set': {winner: winnerTeam, ended: new Date(Date.now())}},
       {returnOriginal: false})
     const game = result.value
@@ -121,6 +127,7 @@ class GameService {
       ended: game.ended,
       canceled: game.canceled,
       winner: game.winner,
+      active: this.isActive(game),
       teams: [
         {
           players: t1Players,
@@ -134,22 +141,15 @@ class GameService {
     }
   }
 
-  private playerString(player: IPlayer) {
-    return `${player.name}(${player.rating})`
-  }
-
   private assignTeams(players: IPlayer[]): ITeam[] {
     const sortedPlayers = _.orderBy(players, 'rating', 'desc')
-    console.log('sortedPlayers', _.map(sortedPlayers, p => this.playerString(p)))
     const weakestPlayer = sortedPlayers[sortedPlayers.length - 1]
-    console.log('weakestPlayer', this.playerString(weakestPlayer))
     const lowestRating = weakestPlayer.rating
     const adjustment = lowestRating < 0 ? Math.abs(lowestRating) : 0
     const adjustedPlayers = _.map(sortedPlayers, p => {
       p.rating += adjustment
       return p
     })
-    console.log('adjustedPlayers', _.map(adjustedPlayers, p => this.playerString(p)))
     let teams: IPlayer[][] = [[], []]
     adjustedPlayers.forEach(p => {
       teams = _.sortBy(teams, this.teamRating)
@@ -177,6 +177,10 @@ class GameService {
     }
     const inserted = await this.collection.insertOne(game)
     return this.collection.findOne({_id: inserted.insertedId})
+  }
+
+  private isActive(game: IGame): boolean {
+    return _.isNil(game.winner) && !game.canceled
   }
 
   private async updateRating(game: IGame) {

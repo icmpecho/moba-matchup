@@ -1,6 +1,6 @@
 import {Db} from 'mongodb'
-import { assert, testDB } from './helper'
-import { PlayerService, IPlayer } from '../player'
+import { assert, testDB } from '../helper'
+import { PlayerService, IPlayer } from '../../models/player'
 
 describe('PlayerService', () => {
   let db: Db

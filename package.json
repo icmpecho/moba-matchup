@@ -7,10 +7,12 @@
   "description": "",
   "main": "dist/main.js",
   "scripts": {
-    "start": "tsc && node dist/main.js",
-    "test": "tsc && mocha dist/models/tests --recursive",
-    "build": "webpack",
-    "heroku-postbuild": "webpack -p"
+    "start": "node dist/main.js",
+    "test": "tsc && mocha dist/tests --recursive",
+    "build:back": "tsc",
+    "build:front": "webpack -p",
+    "build": "tsc && webpack -p",
+    "heroku-postbuild": "tsc && webpack -p"
   },
   "author": "",
   "license": "ISC",
@@ -46,6 +48,7 @@
     "koa-static": "^4.0.1",
     "lodash": "^4.17.4",
     "mocha": "^3.5.0",
+    "moment": "^2.18.1",
     "mongodb": "^2.2.30",
     "style-loader": "^0.18.2",
     "typescript": "^2.4.2",
