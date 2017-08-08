@@ -17,6 +17,10 @@ export default {
     updateGame(state, game) {
       const index = _.findIndex(state.games, {_id: game._id})
       Vue.set(state.games, index, game)
+    },
+
+    prependGame(state, game) {
+      state.games.unshift(game)
     }
   },
 
@@ -48,6 +52,23 @@ export default {
       $.post(url, payload).then((data, status) => {
         if(status == 'success') {
           commit('updateGame', data)
+        } else {
+          console.log(`[${status}] POST ${url}`)
+        }
+      })
+    },
+
+    reCreateGame({commit}, game) {
+      const mapId = (p) => p._id
+      const playerIds = _.concat(
+        _.map(game.teams[0].players, mapId),
+        _.map(game.teams[1].players, mapId)
+      )
+      const payload = {playerIds}
+      const url = '/api/games'
+      $.post(url, payload).then((data, status) => {
+        if(status == 'success') {
+          commit('prependGame', data)
         } else {
           console.log(`[${status}] POST ${url}`)
         }

@@ -22,6 +22,13 @@
       </button>
     </div>
   </div>
+  <div class="panel-footer" v-if="!game.active">
+    <div class="text-right">
+      <button type="button" class="btn btn-default" @click="reCreate">
+        Re Create
+      </button>
+    </div>
+  </div>
 </div>
 </template>
 
@@ -61,6 +68,9 @@ export default {
     cancel() {
       this.$store.dispatch('game/cancelGame', this.game._id)
     },
+    reCreate() {
+      this.$store.dispatch('game/reCreateGame', this.game)
+    }
   },
   components: {
     TeamDetail
