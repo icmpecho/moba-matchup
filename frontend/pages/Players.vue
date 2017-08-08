@@ -27,7 +27,6 @@
 <script>
 import PlayerList from '../components/PlayerList.vue'
 import CreateGameButton from '../components/CreateGameButton.vue'
-import {mapState} from 'vuex'
 
 export default {
   data: function () {
