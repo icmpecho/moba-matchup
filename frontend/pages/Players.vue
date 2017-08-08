@@ -3,14 +3,18 @@
   <div id="header">
     <div class="container">
       <div class="row">
-        <div class="col-xs-12 col-md-8">
+        <div class="col-xs-12 col-md-6">
           <h1>Players</h1>
         </div>
-        <div class="col-xs-6 col-md-2">
+         <div class="col-xs-12 col-md-2">
+           <CreatePlayerModal>
+           </CreatePlayerModal>
+        </div>
+        <div class="col-xs-12 col-md-2">
           <CreateGameButton :playersCount="selectedPlayersCount" @click.native="createGame">
           </CreateGameButton>
         </div>
-        <div class="col-xs-6 col-md-2">
+        <div class="col-xs-12 col-md-2">
           <button type="button" class="btn btn-default" @click="clear">
             Clear All Selection
           </button>
@@ -27,6 +31,7 @@
 <script>
 import PlayerList from '../components/PlayerList.vue'
 import CreateGameButton from '../components/CreateGameButton.vue'
+import CreatePlayerModal from '../components/CreatePlayerModal.vue'
 
 export default {
   data: function () {
@@ -50,7 +55,8 @@ export default {
   },
   components: {
     PlayerList,
-    CreateGameButton
+    CreateGameButton,
+    CreatePlayerModal
   },
   created: function () {
     this.$store.dispatch('player/refreshPlayers')

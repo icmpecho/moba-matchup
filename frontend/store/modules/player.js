@@ -63,6 +63,13 @@ export default {
           console.log(`[${status}] POST /api/games`)
         }
       })
+    },
+
+    createPlayer({state}){
+      // const payload = {playerIds}
+      // $.post("/api/players", payload).then((data, status) => {
+
+      // })
     }
   },
 
