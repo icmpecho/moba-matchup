@@ -65,11 +65,16 @@ export default {
       })
     },
 
-    createPlayer({state}){
-      // const payload = {playerIds}
-      // $.post("/api/players", payload).then((data, status) => {
-
-      // })
+    createPlayer({commit, dispatch}, playerId){
+      const payload = {name:playerId}
+      $.post("/api/players", payload).then((data, status) => {
+        if(status == 'success') {
+          console.log("Create complete.")
+          dispatch('refreshPlayers')
+        } else {
+          
+        }
+      })
     }
   },
 

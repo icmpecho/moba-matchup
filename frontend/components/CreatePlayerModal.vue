@@ -9,20 +9,18 @@
       <!-- Modal content-->
       <div class="modal-content">
         <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <button type="button" class="close" data-dismiss="modal" @click="playerId=''">&times;</button>
           <h4 class="modal-title">Create Player</h4>
         </div>
         <div class="modal-body">
-          <form>
             <div class="form-group">
-              <label for="inputPlayerId">Player ID</label>
-              <input type="text" class="form-control" id="inputPlayerId" placeholder="Rov ID">
+              <label>Player ID&nbsp;&nbsp;</label>
+              <input v-model="playerId">
             </div>
-          </form>
         </div>
         <div class="modal-footer">
-          <button type="submit" class="btn btn-default">Submit</button>
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button class="btn btn-default" data-dismiss="modal" @click="createPlayer">Submit</button>
+          <button class="btn btn-default" data-dismiss="modal" @click="playerId=''">Close</button>
         </div>
       </div>
 
@@ -33,15 +31,21 @@
 </template>
 
 
-<<script>
+<script>
 export default {
   data: function () {
-    return {}
+    return { playerId: ""}
   },
 
   methods: {
     createPlayer: function () {
-      this.$store.dispatch('player/createPlayer')
+      // const params = {id: this.playerid, }
+      if(this.playerId.trim() !== ""){
+        this.$store.dispatch('player/createPlayer',this.playerId.trim())
+      }else{
+        
+      }
+      
     }
   }
 }
