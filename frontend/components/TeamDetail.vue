@@ -6,8 +6,11 @@
     </h3>
   </div>
   <ul class="list-group">
-    <li class="list-group-item" v-for="player in team.players" :key="player._id">
-      {{player.name}} <span class="badge">{{player.rating}}</span>
+    <li class="list-group-item" v-for="player in team.players"
+      :key="player._id" @click="toggleMVP(player._id)">
+      {{player.name}}
+      <span class="badge">{{player.rating}}</span>
+      <span class="badge" v-if="player._id == team.mvp">MVP</span>
     </li>
   </ul>
   <div class="panel-footer" v-if="game.active">
@@ -39,13 +42,19 @@ export default {
       } else {
         return 'panel-default'
       }
-    },
+    }
   },
   methods: {
     submitWinner() {
       this.$store.dispatch('game/submitWinner',
         { gameId: this.game._id, winner: this.teamId })
-    }
+    },
+    toggleMVP(playerId) {
+      if (this.game.active) {
+        this.$store.dispatch('game/toggleMVP',
+          { gameId: this.game._id, teamId: this.teamId, playerId: playerId })
+      }
+    },
   }
 }
 </script>

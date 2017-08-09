@@ -21,6 +21,13 @@ export default {
 
     prependGame(state, game) {
       state.games.unshift(game)
+    },
+
+    setMVP(state, data) {
+      const index = _.findIndex(state.games, {_id: data.gameId})
+      let game = _.cloneDeep(state.games[index])
+      game.teams[data.teamId].mvp = data.playerId
+      Vue.set(state.games, index, game)
     }
   },
 
@@ -46,9 +53,12 @@ export default {
       })
     },
 
-    submitWinner({commit}, data) {
+    submitWinner({commit, state}, data) {
+      const game = _.find(state.games, {_id: data.gameId})
+      const mvps = _.filter(
+        [game.teams[0].mvp, game.teams[1].mvp], x => !_.isNil(x))
       const url = `/api/games/${data.gameId}/submit`
-      const payload = {winner: data.winner}
+      const payload = {winner: data.winner, mvps: mvps}
       $.post(url, payload).then((data, status) => {
         if(status == 'success') {
           commit('updateGame', data)
@@ -73,6 +83,10 @@ export default {
           console.log(`[${status}] POST ${url}`)
         }
       })
+    },
+
+    toggleMVP({commit}, data) {
+      commit('setMVP', data)
     }
   },
 }
