@@ -1,6 +1,7 @@
 <template>
 <div>
- <button type="button" class="btn btn-info" data-toggle="modal" data-target="#createPlayerModal">Create Player
+ <button type="button" class="btn btn-info" data-toggle="modal" data-target="#createPlayerModal">
+    Add Player <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 
  </button>
 <!-- Modal -->
   <div class="modal fade" id="createPlayerModal" role="dialog">
