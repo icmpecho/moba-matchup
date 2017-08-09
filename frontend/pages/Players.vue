@@ -3,31 +3,30 @@
   <div id="header">
     <div class="container">
       <div class="row">
-        <div class="col-xs-6 col-md-2">
-          <h1>Players</h1>
+        <div class="col-xs-12 col-md-4">
+          <h1>
+            Players
+            <span>
+              <button type="button" class="btn btn-link" data-toggle="modal" data-target="#createPlayerModal">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 
+              </button>
+            </span>
+          </h1>
         </div>
-        <div class="col-xs-6 col-md-2 pull-right">
-          <CreatePlayerModal></CreatePlayerModal>  
-        </div>
-      </div>
-      
-      <div class="row">
-        <div class="col-xs-6 col-sm-3 col-md-2 pull-right">
-          <CreateGameButton :playersCount="selectedPlayersCount" @click.native="createGame">
-          </CreateGameButton>
-        </div>
-        <div class="col-xs-6 col-sm-3 col-md-2 pull-right">
+        <div class="col-xs-12 col-md-8 text-right">
           <button type="button" class="btn btn-default" @click="clear">
             Clear Selection
           </button>
+          <CreateGameButton :playersCount="selectedPlayersCount" @click.native="createGame">
+          </CreateGameButton>
         </div>
       </div>
-
     </div>
   </div>
   <div class="container">
     <PlayerList :players="players"></PlayerList>
   </div>
+  <CreatePlayerModal id="createPlayerModal"></CreatePlayerModal>
 </div>
 </template>
 
