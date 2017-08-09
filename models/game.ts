@@ -93,13 +93,27 @@ class GameService {
   }
 
   async submitResult(
-    gameId: string, winnerTeam: number): Promise<IGame> {
+    gameId: string, winnerTeam: number, mvps: ObjectID[] = []): Promise<IGame> {
     const id = new ObjectID(gameId)
+    let game: IGame = await this.collection.findOne({_id: id})
+    if (_.isNil(game)) {
+      throw new ModelNotFoundError('Game not found')
+    }
+    mvps.forEach(pid => {
+      game.teams.forEach(team => {
+        const playerIds = _.map(team.playerIds, x => x.toHexString())
+        if(_.includes(playerIds, pid.toHexString())) {
+          team.mvp = pid
+        }
+      })
+    })
+    game.winner = winnerTeam
+    game.ended = new Date(Date.now())
     const result = await this.collection.findOneAndUpdate(
       _.assign({_id: id}, activeQuery),
-      {'$set': {winner: winnerTeam, ended: new Date(Date.now())}},
+      game,
       {returnOriginal: false})
-    const game = result.value
+    game = result.value
     if (_.isNil(game)) {
       throw new ModelNotFoundError('Active game not found')
     }

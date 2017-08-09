@@ -75,7 +75,7 @@ describe('GameService', () => {
       return async function() {
         oldGameValue = await service.game.enrich(game)
         result = await service.game.submitResult(
-          game._id.toHexString(), 0)
+          game._id.toHexString(), 0, [players[5]._id, players[3]._id])
       }()  
     })
   
@@ -117,6 +117,13 @@ describe('GameService', () => {
           assert.isBelow(newRating, oldRating)
         }
       }()
+    })
+
+    it('assign mvp to correct team', () => {
+      assert.equal(
+        result.teams[0].mvp.toHexString(), players[3]._id.toHexString())
+      assert.equal(
+        result.teams[1].mvp.toHexString(), players[5]._id.toHexString())
     })
   })
 
