@@ -93,7 +93,7 @@ class GameService {
   }
 
   async submitResult(
-    gameId: string, winnerTeam: number, mvps: ObjectID[] = []): Promise<IGame> {
+    gameId: string, winnerTeam: number, mvps: string[] = []): Promise<IGame> {
     const id = new ObjectID(gameId)
     let game: IGame = await this.collection.findOne({_id: id})
     if (_.isNil(game)) {
@@ -102,8 +102,8 @@ class GameService {
     mvps.forEach(pid => {
       game.teams.forEach(team => {
         const playerIds = _.map(team.playerIds, x => x.toHexString())
-        if(_.includes(playerIds, pid.toHexString())) {
-          team.mvp = pid
+        if(_.includes(playerIds, pid)) {
+          team.mvp = new ObjectID(pid)
         }
       })
     })
@@ -117,7 +117,7 @@ class GameService {
     if (_.isNil(game)) {
       throw new ModelNotFoundError('Active game not found')
     }
-    await this.updateRating(game, mvps)
+    await this.updateRating(game)
     return game
   }
 
@@ -188,7 +188,7 @@ class GameService {
     return _.isNil(game.winner) && !game.canceled
   }
 
-  private async updateRating(game: IGame, mvps: ObjectID[]) {
+  private async updateRating(game: IGame) {
     const pCollection = this.db.collection('players')
     const winner = game.winner
     const winnerIds = game.teams[winner].playerIds
@@ -203,6 +203,8 @@ class GameService {
         {'$inc': {rating: -1}},
       ),
     ])
+    const mvps = _.filter(
+      [game.teams[0].mvp, game.teams[1].mvp], x => !_.isNil(x))
     if (mvps.length > 0) {
       await pCollection.updateMany(
         {_id: {'$in': mvps}},

@@ -75,7 +75,8 @@ describe('GameService', () => {
       return async function() {
         oldGameValue = await service.game.enrich(game)
         result = await service.game.submitResult(
-          game._id.toHexString(), 0, [players[5]._id, players[3]._id])
+          game._id.toHexString(), 0,
+          [players[5]._id.toHexString(), players[3]._id.toHexString()])
       }()  
     })
   
