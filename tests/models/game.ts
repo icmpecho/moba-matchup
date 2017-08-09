@@ -119,4 +119,21 @@ describe('GameService', () => {
       }()
     })
   })
+
+  describe('#enrich', () => {
+    let enrichedGame: IEnrichedGame
+    beforeEach(() => {
+      return async function () {
+        enrichedGame = await service.game.enrich(game)
+      }()
+    })
+
+    it('set active flag', () => {
+      assert.isTrue(enrichedGame.active)
+    })
+
+    it('change playerIds into players', () => {
+      assert.equal(enrichedGame.teams[0].players[0].name, players[0].name)
+    })
+  })
 })

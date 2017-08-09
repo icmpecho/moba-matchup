@@ -5,6 +5,7 @@ import {ModelNotFoundError} from './error'
 
 interface ITeam {
   playerIds: ObjectID[],
+  mvp?: ObjectID,
   rating: number,
 }
 
@@ -19,6 +20,7 @@ interface IGame {
 
 interface IEnrichedTeam {
   players: IPlayer[],
+  mvp?: ObjectID,
   rating: number,
 }
 
@@ -121,24 +123,13 @@ class GameService {
       pCollection.find({_id: {'$in': game.teams[0].playerIds}}).toArray(),
       pCollection.find({_id: {'$in': game.teams[1].playerIds}}).toArray(),
     ])
-    return {
-      _id: game._id,
-      created: game.created,
-      ended: game.ended,
-      canceled: game.canceled,
-      winner: game.winner,
-      active: this.isActive(game),
-      teams: [
-        {
-          players: t1Players,
-          rating: game.teams[0].rating,
-        },
-        {
-          players: t2Players,
-          rating: game.teams[1].rating,
-        },
-      ]
-    }
+    let result: any = _.cloneDeep(game)
+    delete result.teams[0].playerIds
+    result.teams[0].players = t1Players
+    delete result.teams[1].playerIds
+    result.teams[1].players = t2Players
+    result.active = this.isActive(game)
+    return result
   }
 
   private assignTeams(players: IPlayer[]): ITeam[] {
