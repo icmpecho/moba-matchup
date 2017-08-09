@@ -117,7 +117,7 @@ class GameService {
     if (_.isNil(game)) {
       throw new ModelNotFoundError('Active game not found')
     }
-    await this.updateRating(game)
+    await this.updateRating(game, mvps)
     return game
   }
 
@@ -188,7 +188,7 @@ class GameService {
     return _.isNil(game.winner) && !game.canceled
   }
 
-  private async updateRating(game: IGame) {
+  private async updateRating(game: IGame, mvps: ObjectID[]) {
     const pCollection = this.db.collection('players')
     const winner = game.winner
     const winnerIds = game.teams[winner].playerIds
@@ -203,6 +203,12 @@ class GameService {
         {'$inc': {rating: -1}},
       ),
     ])
+    if (mvps.length > 0) {
+      await pCollection.updateMany(
+        {_id: {'$in': mvps}},
+        {'$inc': {rating: 1}},
+      )
+    }
   }
 }
 

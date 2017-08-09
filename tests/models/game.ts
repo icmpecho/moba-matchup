@@ -114,7 +114,14 @@ describe('GameService', () => {
         for(let i = 0; i < 5; i++) {
           const oldRating = oldGameValue.teams[1].players[i].rating
           const newRating = newGameValue.teams[1].players[i].rating
-          assert.isBelow(newRating, oldRating)
+          if (
+            newGameValue.teams[1].players[i]._id.toHexString() == 
+            newGameValue.teams[1].mvp.toHexString()
+          ) {
+            assert.equal(newRating, oldRating)
+          } else {
+            assert.isBelow(newRating, oldRating)
+          }
         }
       }()
     })
