@@ -12,6 +12,7 @@
     "build:back": "tsc",
     "build:front": "webpack -p",
     "build": "tsc && webpack -p",
+    "watch:front": "webpack --progress --colors --watch",
     "heroku-postbuild": "tsc && webpack -p"
   },
   "author": "",
