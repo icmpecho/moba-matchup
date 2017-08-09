@@ -63,6 +63,18 @@ export default {
           console.log(`[${status}] POST /api/games`)
         }
       })
+    },
+
+    createPlayer({commit, dispatch}, playerId){
+      const payload = {name:playerId}
+      $.post("/api/players", payload).then((data, status) => {
+        if(status == 'success') {
+          console.log("Create complete.")
+          dispatch('refreshPlayers')
+        } else {
+          
+        }
+      })
     }
   },
 
