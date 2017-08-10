@@ -82,7 +82,8 @@ class PlayerService {
   private async totalGames(player: IPlayer): Promise<number> {
     const collection = this.db.collection('games')
     return collection.count({
-      teams: { '$elemMatch': { playerIds: player._id }}
+      teams: { '$elemMatch': { playerIds: player._id }},
+      winner: { '$exists': true, '$ne': null },
     })
   }
 
