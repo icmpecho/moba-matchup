@@ -8,7 +8,14 @@
     <tr v-for="player in players" :key="player._id"
       :class="{success: player.selected}"
       @click="toggleSelection(player._id)">
-      <td>{{player.name}}</td>
+      <td>
+        <span class="detail-link">
+          <router-link to="/players" @click.native.stop>
+              <span class="glyphicon glyphicon-search"></span>
+          </router-link>
+        </span>
+        {{player.name}}
+      </td>
       <td>{{player.rating}}</td>
     </tr>
   </tbody>
@@ -28,3 +35,9 @@ export default {
   }
 }
 </script>
+
+<<style>
+.detail-link {
+  margin-right: 10px
+}
+</style>

@@ -89,7 +89,8 @@ table {
   top: 0;
   width: 100%;
   padding-top: 20px;
-  padding-bottom: 10px
+  padding-bottom: 10px;
+  z-index: 1;
 }
 .affix-top {
   width: 100%
