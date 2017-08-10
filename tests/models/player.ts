@@ -111,7 +111,7 @@ describe('PlayerService', () => {
         await service.game.submitResult(games[0]._id.toHexString(), 0)
         await service.game.submitResult(games[1]._id.toHexString(), 1)
         const enrichedPlayer = await service.player.enrich(players[0])
-        assert.deepEqual(enrichedPlayer.recentResults, [false, true])
+        assert.deepEqual(enrichedPlayer.recent.gameResults, [false, true])
       }()
     })
   })

@@ -11,7 +11,9 @@ interface IPlayer {
 
 interface IEnrichedPlayer extends IPlayer{
   totalGames: number
-  recentResults: boolean[]
+  recent: {
+    gameResults: boolean[]
+  }
 }
 
 class PlayerService {
@@ -49,13 +51,15 @@ class PlayerService {
   }
 
   async enrich(player: IPlayer): Promise<IEnrichedPlayer> {
-    const [totalGames, recentResults] = await Promise.all([
+    const [totalGames, recentGames] = await Promise.all([
       this.totalGames(player),
-      this.recentResults(player),
+      this.recentGames(player),
     ])
     let enrichedPlayer: any = _.cloneDeep(player)
     enrichedPlayer.totalGames = totalGames
-    enrichedPlayer.recentResults = recentResults
+    enrichedPlayer.recent = {
+      gameResults: this.recentResults(player, recentGames)
+    }
     return enrichedPlayer
   }
 
@@ -66,13 +70,16 @@ class PlayerService {
     })
   }
 
-  private async recentResults(player: IPlayer): Promise<boolean[]> {
+  private async recentGames(player: IPlayer): Promise<IGame[]> {
     const collection = this.db.collection('games')
-
-    const recentGames: IGame[] = await collection.find({
+    return collection.find({
       teams: { '$elemMatch': { playerIds: player._id }},
       winner: { '$exists': true, '$ne': null },
-    }).sort('ended', -1).limit(5).toArray()
+    }).sort('ended', -1).limit(10).toArray()
+  }
+
+  private recentResults(
+      player: IPlayer, recentGames: IGame[]): boolean[] {
 
     return recentGames.map(game => {
       const playerIds = game.teams[game.winner].playerIds
