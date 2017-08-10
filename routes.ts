@@ -15,7 +15,8 @@ apiRouter.post('/players', async (ctx) => {
 })
 
 apiRouter.get('/players/:playerId', async (ctx) => {
-  ctx.body = await ctx.models.player.get(ctx.params.playerId)
+  const player = await ctx.models.player.get(ctx.params.playerId)
+  ctx.body = await ctx.models.player.enrich(player)
 })
 
 apiRouter.get('/games', async (ctx) => {
