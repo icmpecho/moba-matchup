@@ -29,12 +29,12 @@
           </thead>
           <tbody>
             <tr>
-              <td>Most Win</td>
+              <td>Playing well</td>
               <td>{{player.recent.bestWith.name}}</td>
               <td>{{player.recent.bestAgainst.name}}</td>
             </tr>
             <tr>
-              <td>Most Lose</td>
+              <td>Playing badly</td>
               <td>{{player.recent.worstWith.name}}</td>
               <td>{{player.recent.worstAgainst.name}}</td>
             </tr>
