@@ -80,15 +80,23 @@ describe('PlayerService', () => {
     beforeEach(() => {
       return async function() {
         let results: Promise<IPlayer>[] = []
-        for(let i = 0; i < 3; i++) {
-          results.push(service.player.create(`player-${i}`))
+        for(let i = 0; i < 10; i++) {
+          results.push(service.player.create(`player-${i}`, i))
         }
         players = await Promise.all(results)
         games = await Promise.all([
           service.game.create([
-            players[0]._id.toHexString(), players[1]._id.toHexString()]),
+            players[0]._id.toHexString(),
+            players[1]._id.toHexString(),
+            players[7]._id.toHexString(),
+            players[9]._id.toHexString(),
+          ]),
           service.game.create([
-            players[0]._id.toHexString(), players[2]._id.toHexString()]),
+            players[0]._id.toHexString(),
+            players[1]._id.toHexString(),
+            players[6]._id.toHexString(),
+            players[8]._id.toHexString(),
+          ]),
         ])
       }()
     })
@@ -97,12 +105,10 @@ describe('PlayerService', () => {
       return async function() {
         const enrichedPlayers = await Promise.all([
           service.player.enrich(players[0]),
-          service.player.enrich(players[1]),
-          service.player.enrich(players[2]),
+          service.player.enrich(players[6]),
         ])
         assert.equal(enrichedPlayers[0].totalGames, 2)
         assert.equal(enrichedPlayers[1].totalGames, 1)
-        assert.equal(enrichedPlayers[2].totalGames, 1)
       }()
     })
 
@@ -111,7 +117,51 @@ describe('PlayerService', () => {
         await service.game.submitResult(games[0]._id.toHexString(), 0)
         await service.game.submitResult(games[1]._id.toHexString(), 1)
         const enrichedPlayer = await service.player.enrich(players[0])
-        assert.deepEqual(enrichedPlayer.recent.gameResults, [false, true])
+        assert.deepEqual(enrichedPlayer.recent.gameResults, [true, false])
+      }()
+    })
+
+    it('returns best with player', () => {
+      return async function () {
+        await Promise.all([
+          service.game.submitResult(games[0]._id.toHexString(), 0),
+          service.game.submitResult(games[1]._id.toHexString(), 1),
+        ])
+        const enrichedPlayer = await service.player.enrich(players[0])
+        assert.equal(enrichedPlayer.recent.bestWith.name, players[8].name)
+      }()
+    })
+
+    it('returns worst with player', () => {
+      return async function () {
+        await Promise.all([
+          service.game.submitResult(games[0]._id.toHexString(), 0),
+          service.game.submitResult(games[1]._id.toHexString(), 1),
+        ])
+        const enrichedPlayer = await service.player.enrich(players[0])
+        assert.equal(enrichedPlayer.recent.worstWith.name, players[9].name)
+      }()
+    })
+
+    it('returns best against player', () => {
+      return async function () {
+        await Promise.all([
+          service.game.submitResult(games[0]._id.toHexString(), 0),
+          service.game.submitResult(games[1]._id.toHexString(), 1),
+        ])
+        const enrichedPlayer = await service.player.enrich(players[0])
+        assert.equal(enrichedPlayer.recent.bestAgainst.name, players[6].name)
+      }()
+    })
+
+    it('returns worst against player', () => {
+      return async function () {
+        await Promise.all([
+          service.game.submitResult(games[0]._id.toHexString(), 0),
+          service.game.submitResult(games[1]._id.toHexString(), 1),
+        ])
+        const enrichedPlayer = await service.player.enrich(players[0])
+        assert.equal(enrichedPlayer.recent.worstAgainst.name, players[7].name)
       }()
     })
   })

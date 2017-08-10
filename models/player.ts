@@ -13,6 +13,10 @@ interface IEnrichedPlayer extends IPlayer{
   totalGames: number
   recent: {
     gameResults: boolean[]
+    bestWith?: IPlayer,
+    worstWith: IPlayer,
+    bestAgainst: IPlayer,
+    worstAgainst: IPlayer,
   }
 }
 
@@ -55,10 +59,22 @@ class PlayerService {
       this.totalGames(player),
       this.recentGames(player),
     ])
+    const bestWithList = this.bestWithList(player, recentGames)
+    const bestAgainstList = this.bestAgainstList(player, recentGames)
+    const [ bw, ww, ba, wa ] = await Promise.all([
+      this.collection.findOne({_id: new ObjectID(_.first(bestWithList))}),
+      this.collection.findOne({_id: new ObjectID(_.last(bestWithList))}),
+      this.collection.findOne({_id: new ObjectID(_.first(bestAgainstList))}),
+      this.collection.findOne({_id: new ObjectID(_.last(bestAgainstList))}),
+    ])
     let enrichedPlayer: any = _.cloneDeep(player)
     enrichedPlayer.totalGames = totalGames
     enrichedPlayer.recent = {
-      gameResults: this.recentResults(player, recentGames)
+      gameResults: this.recentResults(player, recentGames),
+      bestWith: bw,
+      worstWith: ww,
+      bestAgainst: ba,
+      worstAgainst: wa,
     }
     return enrichedPlayer
   }
@@ -90,6 +106,114 @@ class PlayerService {
       }
       return false
     })
+  }
+
+  private playerTeamId(player: IPlayer, game: IGame): number {
+    let result: number = 1
+    game.teams[0].playerIds.forEach(pid => {
+      if (player._id.equals(pid)) {
+        result = 0
+        return
+      }
+    })
+    return result
+  }
+
+  private wonWith(player: IPlayer, games: IGame[]): string[] {
+    let result: string[] = []
+    games.forEach(game => {
+      const playerTeamId = this.playerTeamId(player, game)
+      if(playerTeamId != game.winner) {
+        return
+      }
+      game.teams[playerTeamId].playerIds
+        .map(x => x.toHexString())
+        .forEach(pid => {
+          if (pid != player._id.toHexString()) {
+            result.push(pid)
+          }
+        })
+    })
+    return result
+  }
+
+  private loseWith(player: IPlayer, games: IGame[]): string[] {
+    let result: string[] = []
+    games.forEach(game => {
+      const playerTeamId = this.playerTeamId(player, game)
+      if(playerTeamId == game.winner) {
+        return
+      }
+      game.teams[playerTeamId].playerIds
+        .map(x => x.toHexString())
+        .forEach(pid => {
+          if (pid != player._id.toHexString()) {
+            result.push(pid)
+          }
+        })
+    })
+    return result
+  }
+
+  private ratingWith(player: IPlayer, games: IGame[]): [string, number][] {
+    const wonWith = _.countBy(this.wonWith(player, games))
+    const loseWith = _.countBy(this.loseWith(player, games))
+    
+    return _.toPairs(_.mergeWith(wonWith, loseWith, (w=0, l=0) => w - l))
+  }
+
+  private bestWithList(player: IPlayer, games: IGame[]): string[] {
+    const result: any = _.chain(this.ratingWith(player, games))
+      .orderBy(1, 'desc').map(0).value()
+    return result
+  }
+
+  private wonAgainst(player: IPlayer, games: IGame[]): string[] {
+    let result: string[] = []
+    games.forEach(game => {
+      const playerTeamId = this.playerTeamId(player, game)
+      if(playerTeamId != game.winner) {
+        return
+      }
+      game.teams[1-playerTeamId].playerIds
+        .map(x => x.toHexString())
+        .forEach(pid => {
+          if (pid != player._id.toHexString()) {
+            result.push(pid)
+          }
+        })
+    })
+    return result
+  }
+
+  private loseAgainst(player: IPlayer, games: IGame[]): string[] {
+    let result: string[] = []
+    games.forEach(game => {
+      const playerTeamId = this.playerTeamId(player, game)
+      if(playerTeamId == game.winner) {
+        return
+      }
+      game.teams[1-playerTeamId].playerIds
+        .map(x => x.toHexString())
+        .forEach(pid => {
+          if (pid != player._id.toHexString()) {
+            result.push(pid)
+          }
+        })
+    })
+    return result
+  }
+
+  private ratingAgainst(player: IPlayer, games: IGame[]): [string, number][] {
+    const wonAgainst = _.countBy(this.wonAgainst(player, games))
+    const loseAgainst = _.countBy(this.loseAgainst(player, games))
+    return _.toPairs(_.mergeWith(wonAgainst, loseAgainst, (w=0, l=0) => w - l))
+  }
+
+  private bestAgainstList(player: IPlayer, games: IGame[]): string[] {
+    const result: any = _.chain(this.ratingAgainst(player, games))
+      .orderBy(1, 'desc').map(0).value()
+    return result
   }
 }
 
