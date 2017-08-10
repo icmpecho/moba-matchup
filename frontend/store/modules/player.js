@@ -11,6 +11,7 @@ export default {
 
   state: {
     players: [],
+    currentPlayer: null,
   },
 
   mutations: {
@@ -33,6 +34,9 @@ export default {
       } else if(selectedPlayersCount(state) < 10) {
         player.selected = true
       }
+    },
+    setCurrentPlayer(state, playerDetail) {
+      state.currentPlayer = playerDetail
     }
   },
 
@@ -75,7 +79,18 @@ export default {
           
         }
       })
-    }
+    },
+
+    loadPlayerDetail({commit}, playerId) {
+      const url = `/api/players/${playerId}`
+      $.get(url).then((data, status) => {
+        if(status == 'success') {
+          commit('setCurrentPlayer', data)
+        } else {
+          console.log(`[${status}] ${url}`)
+        }
+      })
+    },
   },
 
   getters: {

@@ -10,7 +10,9 @@
       @click="toggleSelection(player._id)">
       <td>
         <span class="detail-link">
-          <router-link to="/players" @click.native.stop>
+          <router-link
+            :to="{ name: 'player-detail', params: { playerId: player._id } }"
+            @click.native.stop>
               <span class="glyphicon glyphicon-search"></span>
           </router-link>
         </span>
