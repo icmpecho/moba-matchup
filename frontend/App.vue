@@ -12,8 +12,11 @@
 import Navbar from './components/Navbar.vue'
 export default {
   data: function () {
-    return {
-      isLoading: false
+    return {}
+  },
+  computed: {
+    isLoading() {
+      return this.$store.state.isLoading
     }
   },
   components: {

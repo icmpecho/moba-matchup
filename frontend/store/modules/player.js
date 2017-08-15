@@ -42,12 +42,14 @@ export default {
 
   actions: {
     refreshPlayers({commit}) {
+      commit('setLoading', null, { root: true })
       $.get("/api/players").then((data, status) => {
         if(status == 'success') {
           commit('refreshPlayers', data)
         } else {
           console.log(`[${status}] /api/players`)
         }
+        commit('clearLoading', null, { root: true })
       })
     },
     clearAllSelection({commit}) {
@@ -60,35 +62,41 @@ export default {
       }
       const playerIds = _.map(selectedPlayers, p => p._id)
       const payload = {playerIds}
+      commit('setLoading', null, { root: true })
       $.post("/api/games", payload).then((data, status) => {
         if(status == 'success') {
           router.push({name: 'games'})
         } else {
           console.log(`[${status}] POST /api/games`)
         }
+        commit('clearLoading', null, { root: true })
       })
     },
 
     createPlayer({commit, dispatch}, playerId){
       const payload = {name:playerId}
+      commit('setLoading', null, { root: true })
       $.post("/api/players", payload).then((data, status) => {
         if(status == 'success') {
           console.log("Create complete.")
           dispatch('refreshPlayers')
         } else {
-          
+          console.log(`[${status}] POST /api/players`)
         }
+        commit('clearLoading', null, { root: true })
       })
     },
 
     loadPlayerDetail({commit}, playerId) {
       const url = `/api/players/${playerId}`
+      commit('setLoading', null, { root: true })
       $.get(url).then((data, status) => {
         if(status == 'success') {
           commit('setCurrentPlayer', data)
         } else {
           console.log(`[${status}] ${url}`)
         }
+        commit('clearLoading', null, { root: true })
       })
     },
   },

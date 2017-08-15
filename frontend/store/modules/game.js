@@ -33,23 +33,27 @@ export default {
 
   actions: {
     refreshGames({commit}) {
+      commit('setLoading', null, { root: true })
       $.get("/api/games").then((data, status) => {
         if(status == 'success') {
           commit('refreshGames', data)
         } else {
           console.log(`[${status}] /api/games`)
         }
+        commit('clearLoading', null, { root: true })
       })
     },
 
     cancelGame({commit}, gameId) {
       const url = `/api/games/${gameId}/cancel`
+      commit('setLoading', null, { root: true })
       $.post(url).then((data, status) => {
         if(status == 'success') {
           commit('updateGame', data)
         } else {
           console.log(`[${status}] POST ${url}`)
         }
+        commit('clearLoading', null, { root: true })
       })
     },
 
@@ -59,12 +63,14 @@ export default {
         [game.teams[0].mvp, game.teams[1].mvp], x => !_.isNil(x))
       const url = `/api/games/${data.gameId}/submit`
       const payload = {winner: data.winner, mvps: mvps}
+      commit('setLoading', null, { root: true })
       $.post(url, payload).then((data, status) => {
         if(status == 'success') {
           commit('updateGame', data)
         } else {
           console.log(`[${status}] POST ${url}`)
         }
+        commit('clearLoading', null, { root: true })
       })
     },
 
@@ -76,12 +82,14 @@ export default {
       )
       const payload = {playerIds}
       const url = '/api/games'
+      commit('setLoading', null, { root: true })
       $.post(url, payload).then((data, status) => {
         if(status == 'success') {
           commit('prependGame', data)
         } else {
           console.log(`[${status}] POST ${url}`)
         }
+        commit('clearLoading', null, { root: true })
       })
     },
 

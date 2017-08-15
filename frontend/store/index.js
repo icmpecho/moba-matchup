@@ -9,5 +9,16 @@ export default new Vuex.Store({
   modules: {
     player: Player,
     game: Game,
+  },
+  state: {
+    isLoading: false,
+  },
+  mutations: {
+    setLoading(state) {
+      state.isLoading = true
+    },
+    clearLoading(state) {
+      state.isLoading = false
+    }
   }
 })
