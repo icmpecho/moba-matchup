@@ -8,13 +8,7 @@
   <ul class="list-group">
     <li class="list-group-item" v-for="player in team.players"
       :key="player._id" @click="toggleMVP(player._id)">
-      <span class="detail-link">
-          <router-link
-            :to="{ name: 'player-detail', params: { playerId: player._id } }"
-            @click.native.stop>
-              <span class="glyphicon glyphicon-search"></span>
-          </router-link>
-      </span>
+      <PlayerDetailButton :player="player"></PlayerDetailButton>
       {{player.name}}
       <span class="badge">{{player.rating}}</span>
       <span class="badge" v-if="player._id == team.mvp">MVP</span>
@@ -32,6 +26,7 @@
 
 <<script>
 import * as _ from 'lodash'
+import PlayerDetailButton from './PlayerDetailButton.vue'
 
 export default {
   props: ['game', 'teamId'],
@@ -62,12 +57,9 @@ export default {
           { gameId: this.game._id, teamId: this.teamId, playerId: playerId })
       }
     },
+  },
+  components: {
+    PlayerDetailButton
   }
 }
 </script>
-
-<style>
-.detail-link {
-  margin-right: 10px
-}
-</style>

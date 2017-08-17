@@ -9,13 +9,7 @@
       :class="{success: player.selected}"
       @click="toggleSelection(player._id)">
       <td>
-        <span class="detail-link">
-          <router-link
-            :to="{ name: 'player-detail', params: { playerId: player._id } }"
-            @click.native.stop>
-              <span class="glyphicon glyphicon-search"></span>
-          </router-link>
-        </span>
+        <PlayerDetailButton :player="player"></PlayerDetailButton>
         {{player.name}}
       </td>
       <td>{{player.rating}}</td>
@@ -25,6 +19,7 @@
 </template>
 
 <script>
+import PlayerDetailButton from "./PlayerDetailButton.vue"
 export default {
   props: ['players'],
   data: function () {
@@ -34,12 +29,9 @@ export default {
     toggleSelection(playerId, event) {
       this.$store.commit('player/toggleSelection', playerId)
     }
+  },
+  components: {
+    PlayerDetailButton
   }
 }
 </script>
-
-<style>
-.detail-link {
-  margin-right: 10px
-}
-</style>

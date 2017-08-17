@@ -30,13 +30,13 @@
           <tbody>
             <tr>
               <td>Playing well</td>
-              <td>{{player.recent.bestWith.name}}</td>
-              <td>{{player.recent.bestAgainst.name}}</td>
+              <td><PlayerDetailButton :player="player.recent.bestWith"></PlayerDetailButton>{{player.recent.bestWith.name}}</td>
+              <td><PlayerDetailButton :player="player.recent.bestAgainst"></PlayerDetailButton>{{player.recent.bestAgainst.name}}</td>
             </tr>
             <tr>
               <td>Playing badly</td>
-              <td>{{player.recent.worstWith.name}}</td>
-              <td>{{player.recent.worstAgainst.name}}</td>
+              <td><PlayerDetailButton :player="player.recent.worstWith"></PlayerDetailButton>{{player.recent.worstWith.name}}</td>
+              <td><PlayerDetailButton :player="player.recent.worstAgainst"></PlayerDetailButton>{{player.recent.worstAgainst.name}}</td>
             </tr>
           </tbody>
         </table>
@@ -45,7 +45,9 @@
   </div>
 </template>
 
-<<script>
+<script>
+import PlayerDetailButton from "../components/PlayerDetailButton.vue"
+
 export default {
   computed: {
     player: function() {
@@ -64,15 +66,25 @@ export default {
         return 'label-success'
       }
       return 'label-danger'
+    },
+    fetchData: function() {
+      this.$store.dispatch(
+        'player/loadPlayerDetail', this.$route.params.playerId)
     }
   },
   created: function() {
-    this.$store.dispatch('player/loadPlayerDetail', this.$route.params.playerId)
+    this.fetchData()
+  },
+  watch: {
+    '$route': 'fetchData'
+  },
+  components: {
+    PlayerDetailButton
   }
 }
 </script>
 
-<<style scoped>
+<style scoped>
 .label {
   margin-right: 2px
 }
