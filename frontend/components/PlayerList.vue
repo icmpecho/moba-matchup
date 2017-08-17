@@ -24,7 +24,7 @@
 </table>
 </template>
 
-<<script>
+<script>
 export default {
   props: ['players'],
   data: function () {
@@ -38,7 +38,7 @@ export default {
 }
 </script>
 
-<<style>
+<style>
 .detail-link {
   margin-right: 10px
 }
