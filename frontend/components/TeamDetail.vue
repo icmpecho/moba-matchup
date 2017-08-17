@@ -8,6 +8,13 @@
   <ul class="list-group">
     <li class="list-group-item" v-for="player in team.players"
       :key="player._id" @click="toggleMVP(player._id)">
+      <span class="detail-link">
+          <router-link
+            :to="{ name: 'player-detail', params: { playerId: player._id } }"
+            @click.native.stop>
+              <span class="glyphicon glyphicon-search"></span>
+          </router-link>
+      </span>
       {{player.name}}
       <span class="badge">{{player.rating}}</span>
       <span class="badge" v-if="player._id == team.mvp">MVP</span>
@@ -58,3 +65,9 @@ export default {
   }
 }
 </script>
+
+<style>
+.detail-link {
+  margin-right: 10px
+}
+</style>
