@@ -1,4 +1,5 @@
 import {Db} from 'mongodb'
+import * as moment from 'moment'
 import { assert, testDB } from '../helper'
 import { IPlayer } from '../../models/player'
 import { IGame } from '../../models/game'
@@ -103,6 +104,8 @@ describe('PlayerService', () => {
 
     it('return total games the player participated in', () => {
       return async function() {
+        await service.game.submitResult(games[0]._id.toHexString(), 0)
+        await service.game.submitResult(games[1]._id.toHexString(), 1)
         const enrichedPlayers = await Promise.all([
           service.player.enrich(players[0]),
           service.player.enrich(players[6]),
@@ -163,6 +166,57 @@ describe('PlayerService', () => {
         const enrichedPlayer = await service.player.enrich(players[0])
         assert.equal(enrichedPlayer.recent.worstAgainst.name, players[7].name)
       }()
+    })
+  })
+
+  describe('#refreshRating', () => {
+    let players: IPlayer[]
+    let games: IGame[]
+    let refreshedPlayer: IPlayer
+    beforeEach(() => {
+      return async function() {
+        let results: Promise<IPlayer>[] = []
+        for(let i = 0; i < 2; i++) {
+          results.push(service.player.create(`player-${i}`, i))
+        }
+        players = await Promise.all(results)
+        games = await Promise.all([
+          service.game.create([
+            players[0]._id.toHexString(),
+            players[1]._id.toHexString(),
+          ]),
+          service.game.create([
+            players[0]._id.toHexString(),
+            players[1]._id.toHexString(),
+          ]),
+          service.game.create([
+            players[0]._id.toHexString(),
+            players[1]._id.toHexString(),
+          ]),
+          service.game.create([
+            players[0]._id.toHexString(),
+            players[1]._id.toHexString(),
+          ]),
+        ])
+        await Promise.all([
+          service.game.submitResult(games[0]._id.toHexString(), 0),
+          service.game.submitResult(games[1]._id.toHexString(), 0),
+          service.game.submitResult(games[2]._id.toHexString(), 1),
+          service.game.submitResult(games[3]._id.toHexString(), 0),
+        ])
+        const lastMonth = moment().subtract(1, 'months').toDate()
+        await db.collection('games').updateOne(
+          { _id: games[0]._id },
+          { '$set': { ended: lastMonth } },
+        )
+        await service.player.refreshRating(players[0]._id)
+        refreshedPlayer = await service.player.get(
+          players[0]._id.toHexString())
+      }()
+    })
+
+    it('refresh player rating based on games in last two weeks', () => {
+      assert.equal(refreshedPlayer.rating, 1)
     })
   })
 })

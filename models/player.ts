@@ -2,6 +2,7 @@ import * as _ from 'lodash'
 import {Db, ObjectID, Collection} from 'mongodb'
 import {IGame} from './game'
 import {ModelNotFoundError} from './error'
+import * as moment from 'moment'
 
 interface IPlayer {
   _id: ObjectID
@@ -70,13 +71,30 @@ class PlayerService {
     let enrichedPlayer: any = _.cloneDeep(player)
     enrichedPlayer.totalGames = totalGames
     enrichedPlayer.recent = {
-      gameResults: this.recentResults(player, recentGames),
+      gameResults: this.recentResults(player._id, recentGames),
       bestWith: bw,
       worstWith: ww,
       bestAgainst: ba,
       worstAgainst: wa,
     }
     return enrichedPlayer
+  }
+
+  async refreshRating(playerId: ObjectID) {
+    const lastTwoWeeks = moment().subtract(2, 'weeks').toDate()
+    const recentGames: IGame[] = await this.db.collection('games').find({
+      teams: { '$elemMatch': { playerIds: playerId } },
+      winner: { '$exists': true, '$ne': null },
+      ended: { '$gte': lastTwoWeeks },
+    }).toArray()
+    const recentResults = this.recentResults(playerId, recentGames)
+    const wonCount = _.filter(recentResults).length
+    const loseCount = recentGames.length - wonCount
+    const rating = wonCount - loseCount
+    await this.collection.updateOne(
+      { _id: playerId },
+      { '$set': { rating: rating } }
+    )
   }
 
   private async totalGames(player: IPlayer): Promise<number> {
@@ -96,12 +114,12 @@ class PlayerService {
   }
 
   private recentResults(
-      player: IPlayer, recentGames: IGame[]): boolean[] {
+      playerId: ObjectID, recentGames: IGame[]): boolean[] {
 
     return recentGames.map(game => {
       const playerIds = game.teams[game.winner].playerIds
       for(let i = 0; i < playerIds.length; i++) {
-        if (playerIds[i].equals(player._id)) {
+        if (playerIds[i].equals(playerId)) {
           return true
         }
       }

@@ -29,6 +29,7 @@
     "@types/koa-static": "^3.0.0",
     "@types/lodash": "^4.14.71",
     "@types/mocha": "^2.2.41",
+    "@types/moment": "^2.13.0",
     "@types/mongodb": "^2.2.9",
     "@types/node": "^8.0.19",
     "babel-core": "^6.25.0",
