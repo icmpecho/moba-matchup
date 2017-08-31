@@ -218,5 +218,19 @@ describe('PlayerService', () => {
     it('refresh player rating based on games in last two weeks', () => {
       assert.equal(refreshedPlayer.rating, 1)
     })
+
+    describe('#refreshAllRatings', () => {
+      it('refresh ratings of every players', () => {
+        return async function() {
+          await service.player.refreshAllRatings()
+          const refreshedPlayers = await Promise.all([
+            service.player.get(players[0]._id.toHexString()),
+            service.player.get(players[1]._id.toHexString()),
+          ])
+          assert.equal(refreshedPlayers[0].rating, 1)
+          assert.equal(refreshedPlayers[1].rating, -1)
+        }()
+      })
+    })
   })
 })

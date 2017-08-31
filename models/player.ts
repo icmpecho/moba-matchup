@@ -97,6 +97,15 @@ class PlayerService {
     )
   }
 
+  async refreshAllRatings() {
+    const players = await this.collection.find({}).toArray()
+    const promises: Promise<void>[] = []
+    players.forEach((player: IPlayer) => {
+      promises.push(this.refreshRating(player._id))
+    })
+    await Promise.all(promises)
+  }
+
   private async totalGames(player: IPlayer): Promise<number> {
     const collection = this.db.collection('games')
     return collection.count({
