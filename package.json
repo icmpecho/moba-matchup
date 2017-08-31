@@ -8,6 +8,7 @@
   "main": "dist/main.js",
   "scripts": {
     "start": "node dist/main.js",
+    "refresh": "node dist/refresh.js",
     "test": "tsc && mocha dist/tests --recursive",
     "build:back": "tsc",
     "build:front": "webpack -p",
