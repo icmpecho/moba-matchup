@@ -87,10 +87,11 @@ class PlayerService {
       winner: { '$exists': true, '$ne': null },
       ended: { '$gte': lastTwoWeeks },
     }).toArray()
+    const mvpCount = this.mvpCount(playerId, recentGames)
     const recentResults = this.recentResults(playerId, recentGames)
     const wonCount = _.filter(recentResults).length
     const loseCount = recentGames.length - wonCount
-    const rating = wonCount - loseCount
+    const rating = mvpCount + wonCount - loseCount
     await this.collection.updateOne(
       { _id: playerId },
       { '$set': { rating: rating } }
@@ -120,6 +121,18 @@ class PlayerService {
       teams: { '$elemMatch': { playerIds: player._id }},
       winner: { '$exists': true, '$ne': null },
     }).sort('ended', -1).limit(10).toArray()
+  }
+
+  private mvpCount(playerId: ObjectID, games: IGame[]): number {
+    let count = 0
+    games.forEach(game => {
+      game.teams.forEach(team => {
+        if(playerId.equals(team.mvp)) {
+          count += 1
+        }
+      })
+    })
+    return count
   }
 
   private recentResults(

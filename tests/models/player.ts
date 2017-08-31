@@ -200,7 +200,8 @@ describe('PlayerService', () => {
         ])
         await Promise.all([
           service.game.submitResult(games[0]._id.toHexString(), 0),
-          service.game.submitResult(games[1]._id.toHexString(), 0),
+          service.game.submitResult(
+            games[1]._id.toHexString(), 0, [players[0]._id.toHexString()]),
           service.game.submitResult(games[2]._id.toHexString(), 1),
           service.game.submitResult(games[3]._id.toHexString(), 0),
         ])
@@ -216,7 +217,7 @@ describe('PlayerService', () => {
     })
 
     it('refresh player rating based on games in last two weeks', () => {
-      assert.equal(refreshedPlayer.rating, 1)
+      assert.equal(refreshedPlayer.rating, 2)
     })
 
     describe('#refreshAllRatings', () => {
@@ -227,7 +228,7 @@ describe('PlayerService', () => {
             service.player.get(players[0]._id.toHexString()),
             service.player.get(players[1]._id.toHexString()),
           ])
-          assert.equal(refreshedPlayers[0].rating, 1)
+          assert.equal(refreshedPlayers[0].rating, 2)
           assert.equal(refreshedPlayers[1].rating, -1)
         }()
       })
