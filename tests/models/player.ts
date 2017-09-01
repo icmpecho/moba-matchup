@@ -205,10 +205,10 @@ describe('PlayerService', () => {
           service.game.submitResult(games[2]._id.toHexString(), 1),
           service.game.submitResult(games[3]._id.toHexString(), 0),
         ])
-        const lastMonth = moment().subtract(1, 'months').toDate()
+        const sinceDate = moment().subtract(2, 'months').toDate()
         await db.collection('games').updateOne(
           { _id: games[0]._id },
-          { '$set': { ended: lastMonth } },
+          { '$set': { ended: sinceDate } },
         )
         await service.player.refreshRating(players[0]._id)
         refreshedPlayer = await service.player.get(

@@ -81,7 +81,7 @@ class PlayerService {
   }
 
   async refreshRating(playerId: ObjectID) {
-    const lastTwoWeeks = moment().subtract(2, 'weeks').toDate()
+    const lastTwoWeeks = moment().subtract(1, 'months').toDate()
     const recentGames: IGame[] = await this.db.collection('games').find({
       teams: { '$elemMatch': { playerIds: playerId } },
       winner: { '$exists': true, '$ne': null },
