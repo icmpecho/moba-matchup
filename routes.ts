@@ -51,8 +51,9 @@ apiRouter.post('/line-webhook', async (ctx) => {
   const headers = ctx.request.headers
   const body = ctx.request.body
   console.log("Line Webhook")
-  console.log(`headers: ${headers}`)
-  console.log(`body: ${body}`)
+  console.log(`headers: ${JSON.stringify(headers)}`)
+  console.log(`body: ${JSON.stringify(body)}`)
+  ctx.status = 200
 })
 
 router.use('/api', apiRouter.routes(), apiRouter.allowedMethods())
