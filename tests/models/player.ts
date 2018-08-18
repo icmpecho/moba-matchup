@@ -49,14 +49,13 @@ describe('PlayerService', () => {
   })
 
   describe('#list', () => {
-    let players: IPlayer[]
     beforeEach(() => {
       return async function() {
         let results: Promise<IPlayer>[] = []
         for(let i = 0; i < 60; i++) {
           results.push(service.player.create(`player-${i}`))
         }
-        players = await Promise.all(results)
+        await Promise.all(results)
       }()
     })
 
