@@ -48,11 +48,10 @@ apiRouter.post('/games/:gameId/submit', async (ctx) => {
 })
 
 apiRouter.post('/line-webhook', async (ctx) => {
-  const headers = ctx.request.headers
-  const body = ctx.request.body
-  console.log("Line Webhook")
-  console.log(`headers: ${JSON.stringify(headers)}`)
-  console.log(`body: ${JSON.stringify(body)}`)
+  if(!ctx.lineService.isEnable) {
+    ctx.status = 404
+    return
+  }
   ctx.status = 200
 })
 

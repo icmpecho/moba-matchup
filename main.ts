@@ -9,11 +9,13 @@ import {errorHandler, spaHandler} from './middlewares'
 import {Service as ModelService} from './models'
 import {MongoClient, Db} from 'mongodb'
 import {Config} from './services/config'
+import { LineService } from './services/line';
 
 declare module "koa" {
     interface BaseContext {
         db: Db,
         models: ModelService,
+        lineService: LineService,
         config: Config,
     }
 }
@@ -30,6 +32,9 @@ const main = async () => {
   app.context.models = new ModelService(app.context.db)
   console.log("Creating indexes..")
   await app.context.models.createIndexes()
+
+  app.context.lineService = new LineService(config)
+  console.log(`Line Service is ${app.context.lineService.isEnable ? "enabled": "disabled"}`)
 
   app.use(compress({threshold: 2048, flush: zlib.Z_SYNC_FLUSH}))
   app.use(errorHandler)
