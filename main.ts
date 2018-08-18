@@ -8,11 +8,13 @@ import {router} from './routes'
 import {errorHandler, spaHandler} from './middlewares'
 import {Service as ModelService} from './models'
 import {MongoClient, Db} from 'mongodb'
+import {Config} from './services/config'
 
 declare module "koa" {
     interface BaseContext {
         db: Db,
         models: ModelService,
+        config: Config,
     }
 }
 
@@ -20,16 +22,11 @@ const main = async () => {
   const app = new Koa()
   const staticFiles = new Koa()
   staticFiles.use(serve('public'))
+  const config = Config.buildFromEnv()
+  app.context.config = config
 
-  const mongoUri = 
-    process.env.MONGO_URI ||
-    process.env.MONGODB_URI ||
-    'mongodb://localhost:27017/moba'
-  
-  const port = process.env.PORT || 3000
-
-  console.log(`Connecting to the database [ ${mongoUri} ]`)
-  app.context.db = await MongoClient.connect(mongoUri)
+  console.log(`Connecting to the database [ ${config.mongoUri} ]`)
+  app.context.db = await MongoClient.connect(config.mongoUri)
   app.context.models = new ModelService(app.context.db)
   console.log("Creating indexes..")
   await app.context.models.createIndexes()
@@ -41,8 +38,8 @@ const main = async () => {
   app.use(router.allowedMethods())
   app.use(mount('/static', staticFiles))
   app.use(spaHandler)
-  console.log(`Listening on port ${port}.`)
-  app.listen(port)
+  console.log(`Listening on port ${config.port}.`)
+  app.listen(config.port)
 }
 
 main()
