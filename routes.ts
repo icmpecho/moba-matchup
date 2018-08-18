@@ -47,6 +47,14 @@ apiRouter.post('/games/:gameId/submit', async (ctx) => {
   ctx.body = await ctx.models.game.enrich(game)
 })
 
+apiRouter.post('/line-webhook', async (ctx) => {
+  const headers = ctx.request.headers
+  const body = ctx.request.body
+  console.log("Line Webhook")
+  console.log(`headers: ${headers}`)
+  console.log(`body: ${body}`)
+})
+
 router.use('/api', apiRouter.routes(), apiRouter.allowedMethods())
 
 export {router}
