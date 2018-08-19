@@ -57,7 +57,7 @@ apiRouter.post('/line-webhook', async (ctx) => {
   }
   if(!ctx.lineService.validateSignature(
     ctx.request.headers['X-Line-Signature'],
-    ctx.request.rawBody,
+    JSON.stringify(ctx.request.body),
   )) {
     console.log("LINE webhook invalid signature!")
     ctx.status = 401

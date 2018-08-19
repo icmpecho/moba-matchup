@@ -30,4 +30,13 @@ describe('LineService', () => {
         })
     })
 
+    describe('validateSignature', () => {
+        const config = new Config("", 3000, "secret", "token")
+        const service = new LineService(config)
+        it('validate the signature agaist body', () => {
+            const result = service.validateSignature("signature", '{"foo": "bar"}')
+            assert.equal(false, result)
+        })
+    })
+
 })
