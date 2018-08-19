@@ -214,4 +214,4 @@ class GameService {
   }
 }
 
-export {IGame, IEnrichedGame, ITeam, GameService}
+export {IGame, IEnrichedGame, ITeam, IEnrichedTeam, GameService}

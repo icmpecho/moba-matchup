@@ -2,7 +2,8 @@ import * as _ from 'lodash'
 import { Config } from "./config"
 import * as line from '@line/bot-sdk'
 import { Service as ModelService } from '../models'
-import { IEnrichedGame } from '../models/game'
+import { IEnrichedGame, IEnrichedTeam } from '../models/game'
+import { IPlayer } from '../models/player'
 
 export class LineService {
     private config: Config
@@ -66,10 +67,18 @@ export class LineService {
         console.log(`${channelId} is unsubscribed`)
     }
 
+    private logEvent = (event: line.WebhookEvent) => {
+        console.log(`LINE Event: ${event.type}`)
+        console.log(`source.type: ${event.source.type}`)
+        const channelId = this.getChannelId(event)
+        console.log(`source id: ${channelId}`)
+    }
+
     private annouceGameToChannel = async (game: IEnrichedGame, channelId: string) => {
-        const message: line.TextMessage = {
-            type: 'text',
-            text: JSON.stringify(game),
+        const message: line.FlexMessage = {
+            type: 'flex',
+            altText: JSON.stringify(game),
+            contents: this.gameFlexBox(game),
         }
         await this.client.pushMessage(channelId, message)
         console.log(`Game ${game._id} has been annouced to ${channelId}`)
@@ -86,10 +95,103 @@ export class LineService {
         }
     }
 
-    private logEvent = (event: line.WebhookEvent) => {
-        console.log(`LINE Event: ${event.type}`)
-        console.log(`source.type: ${event.source.type}`)
-        const channelId = this.getChannelId(event)
-        console.log(`source id: ${channelId}`)
+    private playerFlexBox = (player: IPlayer): line.FlexComponent => {
+        return {
+            type: "box",
+            layout: "horizontal",
+            contents: [
+                {
+                    type: "text",
+                    text: player.name,
+                    size: "sm",
+                    color: "#555555",
+                    flex: 0
+                },
+                {
+                    type: "text",
+                    text: player.rating.toString(),
+                    size: "sm",
+                    color: "#111111",
+                    align: "end"
+                },
+            ],
+        }
+    }
+
+    private teamFlexBox = (team: IEnrichedTeam, teamId: string): line.FlexComponent => {
+        const teamHeader: line.FlexComponent = {
+            type: "text",
+            text: `Team ${teamId}`,
+            weight: "bold",
+            color: "#1DB446",
+            size: "lg",
+        }
+        const playersFlex = _.map(team.players, this.playerFlexBox)
+        return {
+            type: "box",
+            layout: "vertical",
+            margin: "xxl",
+            spacing: "sm",
+            contents: _.concat(teamHeader, playersFlex),
+        }
+    }
+
+    private gameFlexBox = (game: IEnrichedGame): line.FlexBubble => {
+        const title = {
+            type: "text",
+            text: "GAME",
+            weight: "bold",
+            color: "#1DB446",
+            size: "sm"
+        }
+        const gameId = {
+            type: "box",
+            layout: "horizontal",
+            margin: "md",
+            contents: [
+                {
+                    type: "text",
+                    text: "ID",
+                    size: "xs",
+                    color: "#aaaaaa",
+                    flex: 0
+                },
+                {
+                    type: "text",
+                    text: game._id.toHexString(),
+                    color: "#aaaaaa",
+                    size: "xs",
+                    align: "end"
+                },
+            ],
+        }
+        const separator = {
+            type: "separator",
+            margin: "xxl",
+        }
+        const footer = {
+            type: "text",
+            margin: "xl",
+            text: "Manage [Coming Soon]",
+            color: "#aaaaaa",
+            size: "sm",
+            align: "center"
+        }
+        const team1 = this.teamFlexBox(game.teams[0], '1')
+        const team2 = this.teamFlexBox(game.teams[1], '2')
+        const contents = _.concat([], title, gameId, separator, team1, separator, team2, separator, footer)
+        return {
+            type: "bubble",
+            styles: {
+                footer: {
+                  separator: true,
+                },
+            },
+            body: {
+                type: "box",
+                layout: "vertical",
+                contents
+            },
+        }
     }
 }
