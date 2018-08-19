@@ -33,7 +33,7 @@ const main = async () => {
   console.log("Creating indexes..")
   await app.context.models.createIndexes()
 
-  app.context.lineService = new LineService(config)
+  app.context.lineService = new LineService(config, app.context.models)
   console.log(`Line Service is ${app.context.lineService.isEnable ? "enabled": "disabled"}`)
 
   app.use(compress({threshold: 2048, flush: zlib.Z_SYNC_FLUSH}))

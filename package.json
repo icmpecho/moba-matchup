@@ -60,5 +60,8 @@
     "vue-template-compiler": "^2.4.2",
     "vuex": "^2.3.1",
     "webpack": "^3.4.1"
+  },
+  "devDependencies": {
+    "ts-mockito": "^2.3.0"
   }
 }

@@ -1,12 +1,15 @@
 import * as _ from 'lodash'
 import { Config } from "./config"
 import * as line from '@line/bot-sdk'
+import { Service as ModelService } from '../models';
 
 export class LineService {
-    config: Config
+    private config: Config
+    private models: ModelService
     
-    constructor(config: Config) {
+    constructor(config: Config, models: ModelService) {
         this.config = config
+        this.models = models
     }
 
     get isEnable(): boolean {
@@ -43,26 +46,32 @@ export class LineService {
     }
 
     private handleFollowEvent = async (event: line.FollowEvent|line.JoinEvent) => {
-        console.log(`handle follow ${event.timestamp}`)
+        const channelId = this.getChannelId(event)
+        const result = await this.models.follower.follow(event.source.type, channelId)
+        console.log(`${result.channelId} is subscribed`)
     }
 
     private handleUnfollowEvent = async (event: line.UnfollowEvent|line.LeaveEvent) => {
-        console.log(`handle unfollow ${event.timestamp}`)
+        const channelId = this.getChannelId(event)
+        await this.models.follower.unfollow(event.source.type, channelId)
+        console.log(`${channelId} is unsubscribed`)
+    }
+
+    private getChannelId = (event: line.WebhookEvent): string => {
+        switch(event.source.type) {
+            case 'group':
+                return event.source.groupId
+            case 'room':
+                return event.source.roomId
+            case 'user':
+                return event.source.userId
+        }
     }
 
     private logEvent = (event: line.WebhookEvent) => {
         console.log(`LINE Event: ${event.type}`)
         console.log(`source.type: ${event.source.type}`)
-        switch(event.source.type) {
-            case 'group':
-                console.log(`source.groupId: ${event.source.groupId}`)
-                break
-            case 'room':
-                console.log(`source.roomId: ${event.source.roomId}`)
-                break
-            case 'user':
-                console.log(`source.userId: ${event.source.userId}`)
-                break
-        }
+        const channelId = this.getChannelId(event)
+        console.log(`source id: ${channelId}`)
     }
 }
