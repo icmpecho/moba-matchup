@@ -59,6 +59,7 @@ apiRouter.post('/line-webhook', async (ctx) => {
     ctx.status = 401
     return
   }
+  await ctx.lineService.handleEvents(ctx.request.body.events)
   ctx.status = 200
 })
 

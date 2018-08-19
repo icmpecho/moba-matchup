@@ -16,4 +16,13 @@ export class LineService {
     validateSignature(signature: string, payload: string): boolean {
         return line.validateSignature(payload, this.config.lineSecretKey, signature)
     }
+
+    async handleEvents(events: line.WebhookEvent[]) {
+        const handlers = _.map(events, this.handleEvent)
+        await Promise.all(handlers)
+    }
+
+    private async handleEvent(event: line.WebhookEvent) {
+        console.log(`LINE Event: ${event.type}`)
+    }
 }
