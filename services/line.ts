@@ -1,15 +1,18 @@
 import * as _ from 'lodash'
 import { Config } from "./config"
 import * as line from '@line/bot-sdk'
-import { Service as ModelService } from '../models';
+import { Service as ModelService } from '../models'
+import { IEnrichedGame } from '../models/game'
 
 export class LineService {
     private config: Config
     private models: ModelService
+    private client: line.Client
     
     constructor(config: Config, models: ModelService) {
         this.config = config
         this.models = models
+        this.client = new line.Client({channelAccessToken: config.lineAccessToken || 'no-token-provided'})
     }
 
     get isEnable(): boolean {
@@ -18,6 +21,12 @@ export class LineService {
 
     validateSignature = (signature: string, payload: string): boolean  => {
         return line.validateSignature(payload, this.config.lineSecretKey, signature)
+    }
+
+    annouceGame = async (game: IEnrichedGame) => {
+        const subscribers = (await this.models.follower.list()).map(x => x.channelId)
+        const annoucements = _.map(subscribers, channelId => this.annouceGameToChannel(game, channelId))
+        await Promise.all(annoucements)
     }
 
     handleEvents = async (events: line.WebhookEvent[]) => {
@@ -55,6 +64,15 @@ export class LineService {
         const channelId = this.getChannelId(event)
         await this.models.follower.unfollow(event.source.type, channelId)
         console.log(`${channelId} is unsubscribed`)
+    }
+
+    private annouceGameToChannel = async (game: IEnrichedGame, channelId: string) => {
+        const message: line.TextMessage = {
+            type: 'text',
+            text: JSON.stringify(game),
+        }
+        await this.client.pushMessage(channelId, message)
+        console.log(`Game ${game._id} has been annouced to ${channelId}`)
     }
 
     private getChannelId = (event: line.WebhookEvent): string => {
