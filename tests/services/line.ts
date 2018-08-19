@@ -1,7 +1,7 @@
 import { LineService } from "../../services/line"
 import { Config } from "../../services/config"
 import { assert } from "../helper"
-import { mock, reset } from "ts-mockito"
+import { mock } from "ts-mockito"
 import { Service as ModelService } from "../../models"
 
 describe('LineService', () => {
