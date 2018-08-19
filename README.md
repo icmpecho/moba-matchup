@@ -5,6 +5,7 @@ A web application aim to solve imbalance private MOBA matches within group of fr
 ## Features
 - Keep track of players rating based on previous matches results
 - Auto balance team within the input group of players based on player rating
+- Announce games in LINE with bot
 
 ## WebUI
 
@@ -15,6 +16,20 @@ Get request to any path except `/api/*` and `/static/` will return `index.html` 
     GET /static/*
 
 Will serve anything under `public/` directory
+
+## LINE Bot
+To enable LINE annoucer bot you have to create your bot in your LINE developer console then set these environment variables
+
+    LINE_SECRET_KEY=your-bot-secret-key-from-the-developer-console-page
+    LINE_ACCESS_TOKEN=your-bot-access-token-generated-from-the-developer-console-page
+    HOST_NAME=host.name.you.deployed.your.application.to
+
+Make sure to `Use webhooks` and `allow bot to join group chats`
+
+Webhook URL
+
+    POST /api/line-webhook
+
 
 ## API
 ### Players
