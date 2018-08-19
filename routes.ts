@@ -49,7 +49,16 @@ apiRouter.post('/games/:gameId/submit', async (ctx) => {
 
 apiRouter.post('/line-webhook', async (ctx) => {
   if(!ctx.lineService.isEnable) {
+    console.log("LINE webhook is disabled!")
     ctx.status = 404
+    return
+  }
+  if(!ctx.lineService.validateSignature(
+    ctx.request.headers['X-Line-Signature'],
+    ctx.request.rawBody,
+  )) {
+    console.log("LINE webhook invalid signature!")
+    ctx.status = 401
     return
   }
   ctx.status = 200
