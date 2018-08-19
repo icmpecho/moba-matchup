@@ -3,17 +3,20 @@ export class Config {
     port: number
     lineSecretKey: string
     lineAccessToken: string
+    hostname: string
 
     constructor(
         mongoUri: string,
         port: number,
         lineSecretKey: string,
         lineAccessToken: string,
+        hostname: string,
     ) {
         this.mongoUri = mongoUri
         this.port = port
         this.lineSecretKey = lineSecretKey
         this.lineAccessToken = lineAccessToken
+        this.hostname = hostname
     }
 
     static buildFromEnv(): Config {
@@ -24,6 +27,7 @@ export class Config {
         const port = parseInt(process.env.PORT) || 3000
         const lineSecretKey = process.env.LINE_SECRET_KEY
         const lineAccessToken = process.env.LINE_ACCESS_TOKEN
-        return new Config(mongoUri, port, lineSecretKey, lineAccessToken)
+        const hostname = process.env.HOST_NAME || `localhost:${port}`
+        return new Config(mongoUri, port, lineSecretKey, lineAccessToken, hostname)
     }
 }

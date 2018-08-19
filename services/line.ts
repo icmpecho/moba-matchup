@@ -174,12 +174,13 @@ export class LineService {
             margin: "xxl",
         }
         const footer = {
-            type: "text",
+            type: "button",
             margin: "xl",
-            text: "Manage [Coming Soon]",
-            color: "#aaaaaa",
-            size: "sm",
-            align: "center"
+            action: {
+                type: "uri",
+                label: "Manage",
+                uri: `https://${this.config.hostname}/games`
+            }
         }
         const team1 = this.teamFlexBox(game.teams[0], '1')
         const team2 = this.teamFlexBox(game.teams[1], '2')
