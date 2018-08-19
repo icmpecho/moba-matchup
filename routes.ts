@@ -48,6 +48,7 @@ apiRouter.post('/games/:gameId/submit', async (ctx) => {
 })
 
 apiRouter.post('/line-webhook', async (ctx) => {
+  console.log(ctx.request.rawBody)
   if(!ctx.lineService.isEnable) {
     console.log("LINE webhook is disabled!")
     ctx.status = 404
