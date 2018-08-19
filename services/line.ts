@@ -30,6 +30,14 @@ export class LineService {
         await Promise.all(annoucements)
     }
 
+    buildFlexMessage = (game: IEnrichedGame): line.FlexMessage => {
+        return {
+            type: 'flex',
+            altText: `GAME #${game._id.toHexString()}`,
+            contents: this.gameFlexBox(game),
+        }
+    }
+
     handleEvents = async (events: line.WebhookEvent[]) => {
         const handlers = _.map(events, this.handleEvent)
         await Promise.all(handlers)
@@ -75,11 +83,7 @@ export class LineService {
     }
 
     private annouceGameToChannel = async (game: IEnrichedGame, channelId: string) => {
-        const message: line.FlexMessage = {
-            type: 'flex',
-            altText: JSON.stringify(game),
-            contents: this.gameFlexBox(game),
-        }
+        const message = this.buildFlexMessage(game)
         await this.client.pushMessage(channelId, message)
         console.log(`Game ${game._id} has been annouced to ${channelId}`)
     }
