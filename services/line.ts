@@ -13,16 +13,16 @@ export class LineService {
         return !(_.isEmpty(this.config.lineSecretKey) || _.isEmpty(this.config.lineAccessToken))
     }
 
-    validateSignature(signature: string, payload: string): boolean {
+    validateSignature = (signature: string, payload: string): boolean  => {
         return line.validateSignature(payload, this.config.lineSecretKey, signature)
     }
 
-    async handleEvents(events: line.WebhookEvent[]) {
+    handleEvents = async (events: line.WebhookEvent[]) => {
         const handlers = _.map(events, this.handleEvent)
         await Promise.all(handlers)
     }
 
-    private async handleEvent(event: line.WebhookEvent) {
+    private handleEvent = async (event: line.WebhookEvent) => {
         this.logEvent(event)
         switch (event.type) {
             case 'follow':
@@ -42,15 +42,15 @@ export class LineService {
         }
     }
 
-    private async handleFollowEvent(event: line.FollowEvent|line.JoinEvent) {
+    private handleFollowEvent = async (event: line.FollowEvent|line.JoinEvent) => {
         console.log(`handle follow ${event.timestamp}`)
     }
 
-    private async handleUnfollowEvent(event: line.UnfollowEvent|line.LeaveEvent) {
+    private handleUnfollowEvent = async (event: line.UnfollowEvent|line.LeaveEvent) => {
         console.log(`handle unfollow ${event.timestamp}`)
     }
 
-    private logEvent(event: line.WebhookEvent) {
+    private logEvent = (event: line.WebhookEvent) => {
         console.log(`LINE Event: ${event.type}`)
         console.log(`source.type: ${event.source.type}`)
         switch(event.source.type) {
