@@ -1,6 +1,6 @@
 import * as _ from 'lodash'
-import { Config } from "./config";
-import * as line from '@line/bot-sdk';
+import { Config } from "./config"
+import * as line from '@line/bot-sdk'
 
 export class LineService {
     config: Config
@@ -23,6 +23,46 @@ export class LineService {
     }
 
     private async handleEvent(event: line.WebhookEvent) {
+        this.logEvent(event)
+        switch (event.type) {
+            case 'follow':
+            case 'join':
+                await this.handleFollowEvent(event)
+                break
+            case 'unfollow':
+            case 'leave':
+                await this.handleUnfollowEvent(event)
+                break
+            case 'join':
+                break
+            case 'leave':
+                break
+            default:
+                break
+        }
+    }
+
+    private async handleFollowEvent(event: line.FollowEvent|line.JoinEvent) {
+        console.log(`handle follow ${event.timestamp}`)
+    }
+
+    private async handleUnfollowEvent(event: line.UnfollowEvent|line.LeaveEvent) {
+        console.log(`handle unfollow ${event.timestamp}`)
+    }
+
+    private logEvent(event: line.WebhookEvent) {
         console.log(`LINE Event: ${event.type}`)
+        console.log(`source.type: ${event.source.type}`)
+        switch(event.source.type) {
+            case 'group':
+                console.log(`source.groupId: ${event.source.groupId}`)
+                break
+            case 'room':
+                console.log(`source.roomId: ${event.source.roomId}`)
+                break
+            case 'user':
+                console.log(`source.userId: ${event.source.userId}`)
+                break
+        }
     }
 }
